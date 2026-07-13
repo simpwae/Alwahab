@@ -8,6 +8,7 @@ const STORAGE_KEY = 'alwahab_user';
 
 interface AuthContextValue {
   user: User | null;
+  isInitialized: boolean;
   login: (email: string) => boolean;
   signup: (name: string, email: string, phone: string) => void;
   logout: () => void;
@@ -23,9 +24,14 @@ function loadStoredUser(): User | null {
 
 export function AuthProvider({ children }: {children: ReactNode;}) {
   const [user, setUser] = useState<User | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // localStorage isn't available during SSR, so `user` always starts null here.
+  // isInitialized lets consumers (e.g. ProtectedRoute) tell "still checking" apart
+  // from "confirmed logged out" instead of redirecting before this effect runs.
   useEffect(() => {
     setUser(loadStoredUser());
+    setIsInitialized(true);
   }, []);
 
   const persist = (next: User | null) => {
@@ -65,7 +71,7 @@ export function AuthProvider({ children }: {children: ReactNode;}) {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout, updateUser }}>
+    <AuthContext.Provider value={{ user, isInitialized, login, signup, logout, updateUser }}>
       {children}
     </AuthContext.Provider>);
 
