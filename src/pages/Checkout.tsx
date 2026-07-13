@@ -25,7 +25,7 @@ import {
 import { CheckoutOrderSummary } from '../components/checkout/CheckoutOrderSummary';
 import { useCart } from '../context/CartContext';
 import { useOrders, generateOrderId } from '../context/OrderContext';
-import { storeSettings } from '../data/storeSettings';
+import { useStoreSettings } from '../context/StoreSettingsContext';
 import { Order, PaymentMethod } from '../types';
 interface ContactShippingValues {
   fullName: string;
@@ -76,6 +76,7 @@ function validateCard(values: CardFormValues) {
 export function Checkout() {
   const { lines, subtotal, clearCart } = useCart();
   const { addOrder } = useOrders();
+  const { settings } = useStoreSettings();
   const navigate = useNavigate();
   const location = useLocation();
   const navState = (location.state ?? {}) as {
@@ -106,9 +107,9 @@ export function Checkout() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const discount = navState.discount ?? 0;
   const shipping =
-  subtotal - discount >= storeSettings.shipping.freeShippingThreshold ?
+  subtotal - discount >= settings.shipping.freeShippingThreshold ?
   0 :
-  storeSettings.shipping.flatRate;
+  settings.shipping.flatRate;
   const total = Math.max(0, subtotal - discount) + (lines.length ? shipping : 0);
   const handleContactChange = (
   field: keyof ContactShippingValues,

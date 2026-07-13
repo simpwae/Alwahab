@@ -35,9 +35,10 @@ export const sampleCoupons: Coupon[] = [
 
 export function findValidCoupon(
 code: string,
-subtotal: number)
+subtotal: number,
+coupons: Coupon[] = sampleCoupons)
 : {coupon: Coupon | null;error: string | null;} {
-  const match = sampleCoupons.find(
+  const match = coupons.find(
     (c) => c.code.toLowerCase() === code.trim().toLowerCase()
   );
   if (!match) return { coupon: null, error: 'Invalid promo code.' };

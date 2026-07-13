@@ -5,6 +5,7 @@ import { ProductCard } from '../ProductCard';
 import { ProductGridSkeleton } from '../states/Skeleton';
 import { EmptyState } from '../states/EmptyState';
 import { ErrorState } from '../states/ErrorState';
+import { useWishlist } from '../../context/WishlistContext';
 interface ProductGridProps {
   products: Product[];
   status?: 'idle' | 'loading' | 'error' | 'empty';
@@ -26,6 +27,7 @@ export function ProductGrid({
   emptyDescription = 'Try adjusting your filters or search terms to find what you are looking for.',
   emptyAction
 }: ProductGridProps) {
+  const { isWishlisted, toggleWishlist } = useWishlist();
   if (status === 'loading') return <ProductGridSkeleton count={8} />;
   if (status === 'error') return <ErrorState onRetry={onRetry} />;
   if (status === 'empty' || products.length === 0) {
@@ -45,6 +47,8 @@ export function ProductGrid({
       <ProductCard
         key={product.id}
         product={product}
+        wishlisted={isWishlisted(product.id)}
+        onToggleWishlist={toggleWishlist}
         onQuickView={onQuickView} />
 
       )}

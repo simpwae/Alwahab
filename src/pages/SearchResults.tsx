@@ -15,7 +15,7 @@ import { ActiveFilterChips } from '../components/listing/ActiveFilterChips';
 import { ProductGrid } from '../components/listing/ProductGrid';
 import { QuickViewModal } from '../components/listing/QuickViewModal';
 import { Button } from '../components/ui/Button';
-import { sampleProducts } from '../data/sampleProducts';
+import { useProducts } from '../context/ProductContext';
 import { Product } from '../types';
 import {
   ListingFilters,
@@ -36,6 +36,7 @@ const POPULAR_CATEGORIES = [
 'Lifestyle'];
 
 export function SearchResults() {
+  const { products } = useProducts();
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q')?.trim() ?? '';
   const [status, setStatus] = useState<'loading' | 'idle'>('loading');
@@ -47,14 +48,14 @@ export function SearchResults() {
   const matched = useMemo(() => {
     if (!query) return [];
     const q = query.toLowerCase();
-    return sampleProducts.filter(
+    return products.filter(
       (p) =>
       p.name.toLowerCase().includes(q) ||
       p.category.toLowerCase().includes(q) ||
       p.brand.toLowerCase().includes(q) ||
       p.description.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, products]);
   useEffect(() => {
     setStatus('loading');
     setFilters(createDefaultFilters());
@@ -70,9 +71,8 @@ export function SearchResults() {
   const visible = sorted.slice(0, page * PAGE_SIZE);
   const hasMore = visible.length < sorted.length;
   const suggestedProducts = useMemo(
-    () =>
-    [...sampleProducts].sort((a, b) => b.unitsSold - a.unitsSold).slice(0, 4),
-    []
+    () => [...products].sort((a, b) => b.unitsSold - a.unitsSold).slice(0, 4),
+    [products]
   );
   return (
     <div className="min-h-full w-full bg-white">

@@ -6,7 +6,7 @@ import {
   ImageIcon,
   XIcon } from
 'lucide-react';
-import { storeSettings } from '../../data/storeSettings';
+import { useStoreSettings } from '../../context/StoreSettingsContext';
 interface BankTransferPanelProps {
   receiptFile: File | null;
   onReceiptChange: (file: File | null) => void;
@@ -46,8 +46,9 @@ export function BankTransferPanel({
   error
 }: BankTransferPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { settings } = useStoreSettings();
   const { bankName, accountTitle, accountNumber, iban, branchCode } =
-  storeSettings.bankTransfer;
+  settings.bankTransfer;
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
     onReceiptChange(file);

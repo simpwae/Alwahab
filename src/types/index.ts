@@ -96,6 +96,12 @@ export interface Coupon {
   status: 'Active' | 'Expired' | 'Scheduled';
 }
 
+export interface Admin {
+  id: string;
+  name: string;
+  email: string;
+}
+
 export type ReviewStatus = 'Pending' | 'Approved' | 'Rejected';
 
 export interface Review {

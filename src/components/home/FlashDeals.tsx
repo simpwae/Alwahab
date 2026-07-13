@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FlameIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { Product } from '../../types';
 import { ProductCard } from '../ProductCard';
+import { useWishlist } from '../../context/WishlistContext';
 interface FlashDealsProps {
   products: Product[];
 }
@@ -46,6 +47,7 @@ export function FlashDeals({ products }: FlashDealsProps) {
   const [targetTime] = useState(getEndOfDeal);
   const { hours, minutes, seconds } = useCountdown(targetTime);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { isWishlisted, toggleWishlist } = useWishlist();
   const scrollBy = (dir: 1 | -1) => {
     scrollRef.current?.scrollBy({
       left: dir * 320,
@@ -111,7 +113,11 @@ export function FlashDeals({ products }: FlashDealsProps) {
           key={product.id}
           className="w-[46%] shrink-0 snap-start sm:w-[30%] lg:w-[23%]">
           
-            <ProductCard product={product} />
+            <ProductCard
+            product={product}
+            wishlisted={isWishlisted(product.id)}
+            onToggleWishlist={toggleWishlist} />
+
           </div>
         )}
       </div>

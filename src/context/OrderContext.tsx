@@ -4,6 +4,7 @@ import { sampleOrders } from '../data/sampleOrders';
 interface OrderContextValue {
   orders: Order[];
   addOrder: (order: Order) => void;
+  updateOrder: (orderId: string, patch: Partial<Order>) => void;
   findOrder: (orderId: string, email: string) => Order | undefined;
   getOrderById: (orderId: string) => Order | undefined;
 }
@@ -17,6 +18,11 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
   const [orders, setOrders] = useState<Order[]>(sampleOrders);
   const addOrder = (order: Order) => {
     setOrders((prev) => [order, ...prev]);
+  };
+  const updateOrder = (orderId: string, patch: Partial<Order>) => {
+    setOrders((prev) =>
+    prev.map((o) => o.id === orderId ? { ...o, ...patch } : o)
+    );
   };
   const findOrder = (orderId: string, email: string) => {
     const normalizedId = orderId.trim().toLowerCase();
@@ -33,6 +39,7 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
       value={{
         orders,
         addOrder,
+        updateOrder,
         findOrder,
         getOrderById
       }}>

@@ -2,11 +2,13 @@ import React, { useRef } from 'react';
 import { ChevronLeftIcon, ChevronRightIcon, SparklesIcon } from 'lucide-react';
 import { Product } from '../../types';
 import { ProductCard } from '../ProductCard';
+import { useWishlist } from '../../context/WishlistContext';
 interface RelatedProductsProps {
   products: Product[];
 }
 export function RelatedProducts({ products }: RelatedProductsProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
+  const { isWishlisted, toggleWishlist } = useWishlist();
   if (products.length === 0) return null;
   const scrollBy = (dir: 1 | -1) => {
     scrollRef.current?.scrollBy({
@@ -53,7 +55,11 @@ export function RelatedProducts({ products }: RelatedProductsProps) {
           key={product.id}
           className="w-[46%] shrink-0 snap-start sm:w-[30%] lg:w-[23%]">
           
-            <ProductCard product={product} />
+            <ProductCard
+            product={product}
+            wishlisted={isWishlisted(product.id)}
+            onToggleWishlist={toggleWishlist} />
+
           </div>
         )}
       </div>

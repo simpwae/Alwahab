@@ -23,8 +23,8 @@ import { ProductTabs } from '../components/product/ProductTabs';
 import { RelatedProducts } from '../components/product/RelatedProducts';
 import { EmptyState } from '../components/states/EmptyState';
 import { useCart } from '../context/CartContext';
-import { sampleProducts } from '../data/sampleProducts';
-import { sampleReviews } from '../data/sampleReviews';
+import { useProducts } from '../context/ProductContext';
+import { useReviews } from '../context/ReviewContext';
 import { categoryToSlug } from '../utils/productFilters';
 const PKR = new Intl.NumberFormat('en-PK', {
   maximumFractionDigits: 0
@@ -34,22 +34,24 @@ export function ProductDetail() {
     id: string;
   }>();
   const { addToCart } = useCart();
+  const { products } = useProducts();
+  const { reviews: allReviews } = useReviews();
   const [qty, setQty] = useState(1);
-  const product = useMemo(() => sampleProducts.find((p) => p.id === id), [id]);
+  const product = useMemo(() => products.find((p) => p.id === id), [id, products]);
   const reviews = useMemo(
-    () => sampleReviews.filter((r) => r.productId === id),
-    [id]
+    () => allReviews.filter((r) => r.productId === id),
+    [id, allReviews]
   );
   const relatedProducts = useMemo(() => {
     if (!product) return [];
-    return sampleProducts.
+    return products.
     filter(
       (p) =>
       p.id !== product.id && (
       p.category === product.category || p.brand === product.brand)
     ).
     slice(0, 8);
-  }, [product]);
+  }, [product, products]);
   // Mock gating: in a real app this would check the user's order history for a delivered order of this product.
   const hasPurchased = false;
   if (!product) {

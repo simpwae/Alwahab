@@ -16,7 +16,7 @@ import { ProductGrid } from '../components/listing/ProductGrid';
 import { QuickViewModal } from '../components/listing/QuickViewModal';
 import { SeoText } from '../components/listing/SeoText';
 import { Button } from '../components/ui/Button';
-import { sampleProducts } from '../data/sampleProducts';
+import { useProducts } from '../context/ProductContext';
 import { Product } from '../types';
 import {
   ListingFilters,
@@ -64,15 +64,16 @@ export function CategoryListing() {
     slug: string;
   }>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const { products } = useProducts();
   const isDeals = slug === 'deals';
   const categoryName =
   slug && !isDeals && slug !== 'all' ? slugToCategory(slug) : null;
   const baseProducts = useMemo(() => {
-    if (isDeals) return sampleProducts.filter((p) => p.discountPct > 0);
+    if (isDeals) return products.filter((p) => p.discountPct > 0);
     if (categoryName)
-    return sampleProducts.filter((p) => p.category === categoryName);
-    return sampleProducts;
-  }, [isDeals, categoryName]);
+    return products.filter((p) => p.category === categoryName);
+    return products;
+  }, [isDeals, categoryName, products]);
   const [status, setStatus] = useState<'loading' | 'idle' | 'error'>('loading');
   const [filters, setFilters] = useState<ListingFilters>(createDefaultFilters());
   const [sort, setSort] = useState<SortOption>(

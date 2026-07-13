@@ -11,16 +11,17 @@ import { FlashDeals } from '../components/home/FlashDeals';
 import { ProductSection } from '../components/home/ProductSection';
 import { PromoBand } from '../components/home/PromoBand';
 import { WhyAlwahab } from '../components/home/WhyAlwahab';
-import { sampleProducts } from '../data/sampleProducts';
+import { useProducts } from '../context/ProductContext';
 export function Home() {
-  const flashDealProducts = sampleProducts.filter(
+  const { products } = useProducts();
+  const flashDealProducts = products.filter(
     (p) => p.discountPct >= 20 && p.status === 'Active'
   );
-  const bestSellers = [...sampleProducts].
+  const bestSellers = [...products].
   filter((p) => p.status === 'Active').
   sort((a, b) => b.unitsSold - a.unitsSold).
   slice(0, 8);
-  const newArrivals = sampleProducts.
+  const newArrivals = products.
   filter((p) => p.ribbon === 'New' || p.status === 'Active').
   slice(0, 8);
   return (

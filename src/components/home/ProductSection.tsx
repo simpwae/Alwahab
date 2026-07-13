@@ -6,6 +6,7 @@ import { ProductCard } from '../ProductCard';
 import { ProductGridSkeleton } from '../states/Skeleton';
 import { EmptyState } from '../states/EmptyState';
 import { ErrorState } from '../states/ErrorState';
+import { useWishlist } from '../../context/WishlistContext';
 interface ProductSectionProps {
   title: string;
   subtitle?: string;
@@ -24,6 +25,7 @@ export function ProductSection({
   status = 'idle',
   onRetry
 }: ProductSectionProps) {
+  const { isWishlisted, toggleWishlist } = useWishlist();
   return (
     <section aria-label={title}>
       <div className="mb-5 flex items-center justify-between gap-4">
@@ -65,7 +67,12 @@ export function ProductSection({
       {status === 'idle' &&
       <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {products.map((product) =>
-        <ProductCard key={product.id} product={product} />
+        <ProductCard
+          key={product.id}
+          product={product}
+          wishlisted={isWishlisted(product.id)}
+          onToggleWishlist={toggleWishlist} />
+
         )}
         </div>
       }

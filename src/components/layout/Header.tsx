@@ -13,7 +13,9 @@ import {
 'lucide-react';
 import { Logo } from './Logo';
 import { useCart } from '../../context/CartContext';
-import { sampleProducts } from '../../data/sampleProducts';
+import { useAuth } from '../../context/AuthContext';
+import { useWishlist } from '../../context/WishlistContext';
+import { useProducts } from '../../context/ProductContext';
 const CATEGORY_LINKS = [
 {
   label: 'Electronics',
@@ -52,20 +54,21 @@ const MEGA_MENU_GROUPS = [
 
 function useSearchBox() {
   const navigate = useNavigate();
+  const { products } = useProducts();
   const [query, setQuery] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const suggestions = useMemo(() => {
     if (!query.trim()) return [];
     const q = query.toLowerCase();
-    return sampleProducts.
+    return products.
     filter(
       (p) =>
       p.name.toLowerCase().includes(q) ||
       p.category.toLowerCase().includes(q)
     ).
     slice(0, 5);
-  }, [query]);
+  }, [query, products]);
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
@@ -94,7 +97,8 @@ function useSearchBox() {
 }
 export function Header() {
   const { itemCount, openCart } = useCart();
-  const [wishlistCount] = useState(2);
+  const { user } = useAuth();
+  const { itemCount: wishlistCount } = useWishlist();
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const {
@@ -201,12 +205,14 @@ export function Header() {
 
         <nav className="ml-auto flex items-center gap-1 sm:gap-2">
           <Link
-            to="/account"
+            to={user ? '/account' : '/login'}
             className="flex flex-col items-center rounded-xl px-2.5 py-1.5 text-ink-muted transition-colors hover:bg-surface hover:text-primary"
-            aria-label="Account">
-            
+            aria-label={user ? `Account, ${user.name}` : 'Login'}>
+
             <UserIcon className="h-5 w-5" />
-            <span className="hidden text-[11px] sm:block">Account</span>
+            <span className="hidden text-[11px] sm:block">
+              {user ? user.name.split(' ')[0] : 'Account'}
+            </span>
           </Link>
           <Link
             to="/account/wishlist"

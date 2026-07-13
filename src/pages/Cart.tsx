@@ -18,34 +18,37 @@ import { Breadcrumb } from '../components/listing/Breadcrumb';
 import { Button } from '../components/ui/Button';
 import { EmptyState } from '../components/states/EmptyState';
 import { useCart } from '../context/CartContext';
+import { useCoupons } from '../context/CouponContext';
+import { useStoreSettings } from '../context/StoreSettingsContext';
 import { findValidCoupon, calculateDiscount } from '../data/sampleCoupons';
-import { storeSettings } from '../data/storeSettings';
 const PKR = new Intl.NumberFormat('en-PK', {
   maximumFractionDigits: 0
 });
 export function Cart() {
   const { lines, updateQty, removeFromCart, subtotal } = useCart();
+  const { coupons } = useCoupons();
+  const { settings } = useStoreSettings();
   const navigate = useNavigate();
   const [promoInput, setPromoInput] = useState('');
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const [promoError, setPromoError] = useState<string | null>(null);
   const discount = appliedCode ?
   calculateDiscount(
-    findValidCoupon(appliedCode, subtotal).coupon!,
+    findValidCoupon(appliedCode, subtotal, coupons).coupon!,
     subtotal
   ) :
   0;
   const shipping =
   lines.length === 0 ?
   0 :
-  subtotal - discount >= storeSettings.shipping.freeShippingThreshold ?
+  subtotal - discount >= settings.shipping.freeShippingThreshold ?
   0 :
-  storeSettings.shipping.flatRate;
+  settings.shipping.flatRate;
   const total = Math.max(0, subtotal - discount) + shipping;
   const handleApplyPromo = (e: React.FormEvent) => {
     e.preventDefault();
     if (!promoInput.trim()) return;
-    const { coupon, error } = findValidCoupon(promoInput, subtotal);
+    const { coupon, error } = findValidCoupon(promoInput, subtotal, coupons);
     if (error || !coupon) {
       setPromoError(error ?? 'Invalid promo code.');
       setAppliedCode(null);
@@ -274,7 +277,7 @@ export function Cart() {
               <p className="mt-3 text-center text-xs text-ink-muted">
                     Add PKR{' '}
                     {PKR.format(
-                  storeSettings.shipping.freeShippingThreshold - (
+                  settings.shipping.freeShippingThreshold - (
                   subtotal - discount)
                 )}{' '}
                     more for free shipping
