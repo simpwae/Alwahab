@@ -9,6 +9,7 @@ import {
   PackageIcon,
   UsersIcon,
   TagIcon,
+  PercentIcon,
   MessageSquareIcon,
   SettingsIcon,
   LogOutIcon } from
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
 { label: 'Dashboard', href: '/admin', icon: LayoutDashboardIcon },
 { label: 'Orders', href: '/admin/orders', icon: ShoppingBagIcon },
 { label: 'Products', href: '/admin/products', icon: PackageIcon },
+{ label: 'Discounts', href: '/admin/discounts', icon: PercentIcon },
 { label: 'Customers', href: '/admin/customers', icon: UsersIcon },
 { label: 'Coupons', href: '/admin/coupons', icon: TagIcon },
 { label: 'Reviews', href: '/admin/reviews', icon: MessageSquareIcon },

@@ -29,7 +29,7 @@ export function AccountNav() {
   };
 
   return (
-    <nav className="flex gap-1 overflow-x-auto rounded-2xl border border-gray-100 p-2 lg:flex-col lg:overflow-visible">
+    <nav className="flex gap-1 overflow-x-auto rounded-2xl border border-gray-100 bg-white p-2 lg:flex-col lg:overflow-visible">
       {NAV_ITEMS.map((item) => {
         const isActive = location.pathname === item.href;
         const Icon = item.icon;

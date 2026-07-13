@@ -7,13 +7,7 @@ import { Button } from '../../components/ui/Button';
 import { EmptyState } from '../../components/states/EmptyState';
 import { useProducts } from '../../context/ProductContext';
 import { Product, ProductStatus } from '../../types';
-
-const CATEGORIES = [
-'Electronics',
-'Accessories',
-'Home & Kitchen',
-'Gadgets',
-'Lifestyle'];
+import { CATEGORIES } from '../../data/categories';
 
 const STATUSES: ProductStatus[] = ['Active', 'Draft', 'OutOfStock'];
 

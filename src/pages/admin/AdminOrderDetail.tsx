@@ -71,6 +71,14 @@ export function AdminOrderDetail() {
               <p className="text-sm font-medium text-ink">
                 {order.customer} {order.email && `· ${order.email}`}
               </p>
+              {order.phone &&
+              <p className="mt-0.5 text-sm text-ink-muted">{order.phone}</p>
+              }
+              {order.shippingAddress &&
+              <p className="mt-0.5 text-sm text-ink-muted">
+                  {order.shippingAddress.line1}, {order.shippingAddress.city}
+                </p>
+              }
             </div>
             <StatusBadge
               label={order.paymentStatus}

@@ -7,6 +7,7 @@ interface ProductContextValue {
   addProduct: (product: Product) => void;
   updateProduct: (id: string, patch: Partial<Product>) => void;
   deleteProduct: (id: string) => void;
+  applyDiscount: (ids: string[], discountPct: number) => void;
 }
 
 const ProductContext = createContext<ProductContextValue | undefined>(undefined);
@@ -23,10 +24,20 @@ export function ProductProvider({ children }: {children: ReactNode;}) {
   const deleteProduct = (id: string) => {
     setProducts((prev) => prev.filter((p) => p.id !== id));
   };
+  const applyDiscount = (ids: string[], discountPct: number) => {
+    const idSet = new Set(ids);
+    setProducts((prev) =>
+    prev.map((p) =>
+    idSet.has(p.id) ?
+    { ...p, sellingPrice: Math.round(p.originalPrice * (1 - discountPct / 100)), discountPct } :
+    p
+    )
+    );
+  };
 
   return (
     <ProductContext.Provider
-      value={{ products, addProduct, updateProduct, deleteProduct }}>
+      value={{ products, addProduct, updateProduct, deleteProduct, applyDiscount }}>
       {children}
     </ProductContext.Provider>);
 

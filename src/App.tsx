@@ -36,6 +36,7 @@ import { AdminOrders } from './pages/admin/AdminOrders';
 import { AdminOrderDetail } from './pages/admin/AdminOrderDetail';
 import { AdminProducts } from './pages/admin/AdminProducts';
 import { AdminProductForm } from './pages/admin/AdminProductForm';
+import { AdminDiscounts } from './pages/admin/AdminDiscounts';
 import { AdminCustomers } from './pages/admin/AdminCustomers';
 import { AdminCustomerDetail } from './pages/admin/AdminCustomerDetail';
 import { AdminCoupons } from './pages/admin/AdminCoupons';
@@ -106,6 +107,12 @@ export function App() {
                   element={
                   <AdminProtectedRoute>
                       <AdminProductForm />
+                    </AdminProtectedRoute>} />
+                <Route
+                  path="/admin/discounts"
+                  element={
+                  <AdminProtectedRoute>
+                      <AdminDiscounts />
                     </AdminProtectedRoute>} />
                 <Route
                   path="/admin/customers"

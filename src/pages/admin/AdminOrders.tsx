@@ -38,6 +38,13 @@ export function AdminOrders() {
                   <p className="mt-0.5 text-xs text-ink-muted">
                     {order.customer} · {order.date}
                   </p>
+                  {(order.phone || order.shippingAddress) &&
+              <p className="mt-0.5 hidden text-xs text-ink-muted sm:block">
+                      {order.phone}
+                      {order.phone && order.shippingAddress && ' · '}
+                      {order.shippingAddress && `${order.shippingAddress.line1}, ${order.shippingAddress.city}`}
+                    </p>
+              }
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-sm font-semibold text-ink">
