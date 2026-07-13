@@ -1,21 +1,45 @@
 import React, { useState } from 'react';
 import { toast } from 'sonner';
-import { UserIcon, MailIcon, PhoneIcon, SaveIcon } from 'lucide-react';
+import { UserIcon, MailIcon, PhoneIcon, SaveIcon, LockIcon } from 'lucide-react';
 import { AccountLayout } from '../components/account/AccountLayout';
 import { FormField } from '../components/ui/FormField';
 import { Button } from '../components/ui/Button';
 import { useAuth } from '../context/AuthContext';
 
+interface PasswordErrors {
+  currentPassword?: string;
+  newPassword?: string;
+  confirmPassword?: string;
+}
+
 export function AccountProfile() {
   const { user, updateUser } = useAuth();
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordErrors, setPasswordErrors] = useState<PasswordErrors>({});
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) return;
     updateUser({ name, phone });
     toast.success('Profile updated');
+  };
+
+  const handlePasswordSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errors: PasswordErrors = {};
+    if (!currentPassword.trim()) errors.currentPassword = 'Current password is required.';
+    if (newPassword.length < 8) errors.newPassword = 'New password must be at least 8 characters.';
+    if (confirmPassword !== newPassword) errors.confirmPassword = 'Passwords do not match.';
+    setPasswordErrors(errors);
+    if (Object.keys(errors).length > 0) return;
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+    toast.success('Password updated');
   };
 
   return (
@@ -56,6 +80,47 @@ export function AccountProfile() {
 
         <Button type="submit" variant="primary" size="md" icon={<SaveIcon className="h-4 w-4" />}>
           Save Changes
+        </Button>
+      </form>
+
+      <form
+        onSubmit={handlePasswordSubmit}
+        className="mt-6 max-w-md space-y-4 rounded-2xl border border-gray-100 p-5">
+
+        <h2 className="font-display text-sm font-bold text-ink">Change Password</h2>
+
+        <FormField
+          label="Current Password"
+          id="current-password"
+          type="password"
+          leadingIcon={<LockIcon className="h-4 w-4" />}
+          value={currentPassword}
+          onChange={(e) => setCurrentPassword(e.target.value)}
+          error={passwordErrors.currentPassword} />
+
+
+        <FormField
+          label="New Password"
+          id="new-password"
+          type="password"
+          leadingIcon={<LockIcon className="h-4 w-4" />}
+          value={newPassword}
+          onChange={(e) => setNewPassword(e.target.value)}
+          error={passwordErrors.newPassword} />
+
+
+        <FormField
+          label="Confirm New Password"
+          id="confirm-password"
+          type="password"
+          leadingIcon={<LockIcon className="h-4 w-4" />}
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          error={passwordErrors.confirmPassword} />
+
+
+        <Button type="submit" variant="primary" size="md" icon={<SaveIcon className="h-4 w-4" />}>
+          Update Password
         </Button>
       </form>
     </AccountLayout>);

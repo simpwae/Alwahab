@@ -59,9 +59,9 @@ function StatTile({
 
 }
 
-type Granularity = 'daily' | 'monthly';
+export type Granularity = 'daily' | 'monthly';
 
-function groupSales(orders: Order[], granularity: Granularity) {
+export function groupSales(orders: Order[], granularity: Granularity) {
   const buckets = new Map<string, number>();
   for (const o of orders) {
     const key = granularity === 'monthly' ? o.date.slice(0, 7) : o.date;
@@ -72,8 +72,9 @@ function groupSales(orders: Order[], granularity: Granularity) {
   map(([date, total]) => ({ date, total }));
 }
 
-function formatBucketLabel(date: string, granularity: Granularity) {
-  const parsed = new Date(granularity === 'monthly' ? `${date}-01` : date);
+export function formatBucketLabel(date: string, granularity: Granularity) {
+  const [year, month, day] = date.split('-').map(Number);
+  const parsed = new Date(year, month - 1, day || 1);
   return parsed.toLocaleDateString('en-US',
   granularity === 'monthly' ? { month: 'short', year: 'numeric' } : { month: 'short', day: 'numeric' }
   );

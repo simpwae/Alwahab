@@ -27,14 +27,14 @@ import { useCart } from '../context/CartContext';
 import { useOrders, generateOrderId } from '../context/OrderContext';
 import { useStoreSettings } from '../context/StoreSettingsContext';
 import { Order, PaymentMethod } from '../types';
-interface ContactShippingValues {
+export interface ContactShippingValues {
   fullName: string;
   email: string;
   phone: string;
   address: string;
   city: string;
 }
-type ContactShippingErrors = Partial<
+export type ContactShippingErrors = Partial<
   Record<keyof ContactShippingValues, string>>;
 
 const INITIAL_CONTACT: ContactShippingValues = {
@@ -44,7 +44,7 @@ const INITIAL_CONTACT: ContactShippingValues = {
   address: '',
   city: ''
 };
-function validateContact(values: ContactShippingValues): ContactShippingErrors {
+export function validateContact(values: ContactShippingValues): ContactShippingErrors {
   const errors: ContactShippingErrors = {};
   if (!values.fullName.trim()) errors.fullName = 'Full name is required.';
   if (!values.email.trim()) {

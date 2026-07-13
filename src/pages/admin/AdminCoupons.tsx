@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { TagIcon, PencilIcon, Trash2Icon, PlusIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -7,9 +7,11 @@ import { StatusBadge } from '../../components/ui/StatusBadge';
 import { EmptyState } from '../../components/states/EmptyState';
 import { Button } from '../../components/ui/Button';
 import { useCoupons } from '../../context/CouponContext';
+import { useOrders } from '../../context/OrderContext';
 import { Coupon } from '../../types';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
+const PAGE_SIZE = 8;
 const STATUS_VARIANT: Record<Coupon['status'], 'success' | 'danger' | 'info'> = {
   Active: 'success',
   Expired: 'danger',
@@ -17,17 +19,75 @@ const STATUS_VARIANT: Record<Coupon['status'], 'success' | 'danger' | 'info'> = 
 };
 
 export function AdminCoupons() {
-  const { coupons, deleteCoupon } = useCoupons();
+  const { coupons, deleteCoupon, deleteCoupons } = useCoupons();
+  const { orders } = useOrders();
+  const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
+  const [page, setPage] = useState(1);
+
+  const referencedCodes = useMemo(
+    () => new Set(orders.map((o) => o.couponCode).filter((c): c is string => Boolean(c))),
+    [orders]
+  );
+
+  const visible = coupons.slice(0, page * PAGE_SIZE);
+  const hasMore = visible.length < coupons.length;
+  const allVisibleSelected = visible.length > 0 && visible.every((c) => selectedCodes.includes(c.code));
+
+  const toggleSelected = (code: string) => {
+    setSelectedCodes((prev) => prev.includes(code) ? prev.filter((x) => x !== code) : [...prev, code]);
+  };
+  const toggleSelectAllVisible = () => {
+    setSelectedCodes((prev) =>
+    allVisibleSelected ?
+    prev.filter((code) => !visible.some((c) => c.code === code)) :
+    [...new Set([...prev, ...visible.map((c) => c.code)])]
+    );
+  };
 
   const handleDelete = (code: string) => {
+    if (referencedCodes.has(code)) {
+      toast.error(`Can't delete "${code}" — it's referenced by an existing order.`);
+      return;
+    }
     if (!window.confirm(`Delete coupon "${code}"? This can't be undone.`)) return;
     deleteCoupon(code);
     toast.success('Coupon deleted');
   };
 
+  const handleBulkDelete = () => {
+    const blocked = selectedCodes.filter((code) => referencedCodes.has(code));
+    const deletable = selectedCodes.filter((code) => !referencedCodes.has(code));
+    if (deletable.length === 0) {
+      toast.error('All selected coupons are referenced by existing orders and can\'t be deleted.');
+      return;
+    }
+    if (!window.confirm(`Delete ${deletable.length} coupon${deletable.length > 1 ? 's' : ''}? This can't be undone.`)) return;
+    deleteCoupons(deletable);
+    setSelectedCodes([]);
+    if (blocked.length > 0) {
+      toast.warning(`${deletable.length} deleted, ${blocked.length} skipped — referenced by existing orders.`);
+    } else {
+      toast.success(`${deletable.length} coupon${deletable.length > 1 ? 's' : ''} deleted`);
+    }
+  };
+
   return (
     <AdminLayout title="Coupons">
-      <div className="mb-4 flex justify-end">
+      <div className="mb-4 flex items-center justify-between gap-3">
+        {selectedCodes.length > 0 ?
+        <div className="flex items-center gap-3 text-sm">
+            <span className="text-ink-muted">{selectedCodes.length} selected</span>
+            <button
+            type="button"
+            onClick={handleBulkDelete}
+            className="rounded-lg px-3 py-1.5 font-medium text-red-600 hover:bg-red-50">
+
+              Delete Selected
+            </button>
+          </div> :
+
+        <span />
+        }
         <Link to="/admin/coupons/new">
           <Button variant="primary" icon={<PlusIcon className="h-4 w-4" />}>
             Add Coupon
@@ -46,6 +106,15 @@ export function AdminCoupons() {
           <table className="w-full text-left text-sm">
             <thead>
               <tr className="border-b border-gray-100 text-xs text-ink-muted">
+                <th className="px-4 py-3">
+                  <input
+                  type="checkbox"
+                  aria-label="Select all"
+                  checked={allVisibleSelected}
+                  onChange={toggleSelectAllVisible}
+                  className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary/20" />
+
+                </th>
                 <th className="px-4 py-3 font-medium">Code</th>
                 <th className="px-4 py-3 font-medium">Discount</th>
                 <th className="hidden px-4 py-3 font-medium sm:table-cell">Min Order</th>
@@ -56,8 +125,17 @@ export function AdminCoupons() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
-              {coupons.map((c) =>
+              {visible.map((c) =>
             <tr key={c.code}>
+                  <td className="px-4 py-3">
+                    <input
+                    type="checkbox"
+                    aria-label={`Select ${c.code}`}
+                    checked={selectedCodes.includes(c.code)}
+                    onChange={() => toggleSelected(c.code)}
+                    className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary/20" />
+
+                  </td>
                   <td className="whitespace-nowrap px-4 py-3 font-display font-bold text-ink">
                     {c.code}
                   </td>
@@ -99,6 +177,13 @@ export function AdminCoupons() {
             )}
             </tbody>
           </table>
+          {hasMore &&
+        <div className="flex justify-center border-t border-gray-100 p-4">
+              <Button variant="secondary" onClick={() => setPage((p) => p + 1)}>
+                Load More
+              </Button>
+            </div>
+        }
         </div>
       }
     </AdminLayout>);

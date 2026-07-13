@@ -7,6 +7,7 @@ interface CouponContextValue {
   addCoupon: (coupon: Coupon) => void;
   updateCoupon: (code: string, patch: Partial<Coupon>) => void;
   deleteCoupon: (code: string) => void;
+  deleteCoupons: (codes: string[]) => void;
 }
 
 const CouponContext = createContext<CouponContextValue | undefined>(undefined);
@@ -25,10 +26,14 @@ export function CouponProvider({ children }: {children: ReactNode;}) {
   const deleteCoupon = (code: string) => {
     setCoupons((prev) => prev.filter((c) => c.code !== code));
   };
+  const deleteCoupons = (codes: string[]) => {
+    const codeSet = new Set(codes);
+    setCoupons((prev) => prev.filter((c) => !codeSet.has(c.code)));
+  };
 
   return (
     <CouponContext.Provider
-      value={{ coupons, addCoupon, updateCoupon, deleteCoupon }}>
+      value={{ coupons, addCoupon, updateCoupon, deleteCoupon, deleteCoupons }}>
       {children}
     </CouponContext.Provider>);
 
