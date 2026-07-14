@@ -49,10 +49,11 @@ export function AdminSidebar() {
   pathname === '/admin' :
   pathname.startsWith(href);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Hard navigation, not router.push(): see AccountNav's handleLogout for why
-    // (avoids the logout-vs-ProtectedRoute-redirect race).
-    logout();
+    // (avoids the logout-vs-ProtectedRoute-redirect race). Awaited so
+    // signOut() finishes clearing the session before the reload.
+    await logout();
     window.location.href = '/admin/login';
   };
 

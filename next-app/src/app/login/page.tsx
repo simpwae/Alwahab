@@ -19,16 +19,19 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
       setError('Enter your email and password.');
       return;
     }
-    const ok = login(email);
-    if (!ok) {
-      setError('No account found with that email.');
+    setIsSubmitting(true);
+    const loginError = await login(email, password);
+    setIsSubmitting(false);
+    if (loginError) {
+      setError(loginError);
       return;
     }
     router.replace('/account');
@@ -80,9 +83,10 @@ export default function Login() {
             variant="primary"
             size="lg"
             fullWidth
+            disabled={isSubmitting}
             icon={<LogInIcon className="h-4 w-4" />}>
 
-            Sign In
+            {isSubmitting ? 'Signing In…' : 'Sign In'}
           </Button>
 
           <p className="text-center text-sm text-ink-muted">
@@ -95,7 +99,7 @@ export default function Login() {
 
         <p className="mt-4 rounded-xl bg-surface p-3 text-xs text-ink-muted">
           Demo accounts: ayesha.khan@example.com, bilal.ahmed@example.com,
-          sara.malik@example.com (any password).
+          sara.malik@example.com — password: Alwahab123!
         </p>
       </main>
 

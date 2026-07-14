@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { UserPlusIcon, MailIcon, PhoneIcon, UserIcon } from 'lucide-react';
+import { UserPlusIcon, MailIcon, PhoneIcon, UserIcon, LockIcon } from 'lucide-react';
 import { Header } from '../../components/layout/Header';
 import { TopUtilityBar } from '../../components/layout/TopUtilityBar';
 import { Footer } from '../../components/layout/Footer';
@@ -19,15 +19,32 @@ export default function Signup() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !email.trim() || !phone.trim()) {
+    if (!name.trim() || !email.trim() || !phone.trim() || !password.trim()) {
       setError('All fields are required.');
       return;
     }
-    signup(name, email, phone);
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters.');
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+    setIsSubmitting(true);
+    const signupError = await signup(name, email, phone, password);
+    setIsSubmitting(false);
+    if (signupError) {
+      setError(signupError);
+      return;
+    }
     router.replace('/account');
   };
 
@@ -84,14 +101,37 @@ export default function Signup() {
             error={error && !phone.trim() ? error : undefined} />
 
 
+          <FormField
+            label="Password"
+            id="signup-password"
+            type="password"
+            placeholder="At least 8 characters"
+            leadingIcon={<LockIcon className="h-4 w-4" />}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            error={error && (!password.trim() || password.length < 8) ? error : undefined} />
+
+
+          <FormField
+            label="Confirm Password"
+            id="signup-confirm-password"
+            type="password"
+            placeholder="Re-enter your password"
+            leadingIcon={<LockIcon className="h-4 w-4" />}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            error={error && password !== confirmPassword ? error : undefined} />
+
+
           <Button
             type="submit"
             variant="primary"
             size="lg"
             fullWidth
+            disabled={isSubmitting}
             icon={<UserPlusIcon className="h-4 w-4" />}>
 
-            Create Account
+            {isSubmitting ? 'Creating Account…' : 'Create Account'}
           </Button>
 
           <p className="text-center text-sm text-ink-muted">

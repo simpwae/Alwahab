@@ -25,13 +25,14 @@ export function AccountNav() {
   const pathname = usePathname();
   const { logout } = useAuth();
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     // Hard navigation, not router.push(): logging out while on a protected
     // page races ProtectedRoute's own reactive "no user -> /login" redirect
     // (both fire off the same user-becomes-null update), and that redirect
     // can win, landing on /login instead of home. A full reload sidesteps
     // the race and guarantees every context resets to its logged-out state.
-    logout();
+    // Awaited so signOut() finishes clearing the session before the reload.
+    await logout();
     window.location.href = '/';
   };
 

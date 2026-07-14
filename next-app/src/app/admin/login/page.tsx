@@ -13,16 +13,19 @@ export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
       setError('Enter your email and password.');
       return;
     }
-    const ok = login(email);
-    if (!ok) {
-      setError('No admin account found with that email.');
+    setIsSubmitting(true);
+    const loginError = await login(email, password);
+    setIsSubmitting(false);
+    if (loginError) {
+      setError(loginError);
       return;
     }
     router.replace('/admin');
@@ -67,14 +70,15 @@ export default function AdminLogin() {
             variant="primary"
             size="lg"
             fullWidth
+            disabled={isSubmitting}
             icon={<LogInIcon className="h-4 w-4" />}>
 
-            Sign In
+            {isSubmitting ? 'Signing In…' : 'Sign In'}
           </Button>
         </form>
 
         <p className="mt-4 rounded-xl bg-white/10 p-3 text-center text-xs text-white/70">
-          Demo account: admin@alwahab.pk (any password).
+          Demo account: admin@alwahab.pk — password: Alwahab123!
         </p>
       </div>
     </div>);

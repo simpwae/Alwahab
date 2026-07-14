@@ -13,7 +13,7 @@ import { Address } from '../../../types';
 const EMPTY_FORM = { label: '', line1: '', city: '', phone: '' };
 
 function AccountAddresses() {
-  const { user, updateUser } = useAuth();
+  const { user, addAddress, updateAddress, deleteAddress } = useAuth();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState(EMPTY_FORM);
@@ -43,20 +43,21 @@ function AccountAddresses() {
     setForm(EMPTY_FORM);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.label.trim() || !form.line1.trim() || !form.city.trim() || !form.phone.trim()) {
       return;
     }
-    const next = editingId ?
-    addresses.map((a) => a.id === editingId ? { ...a, ...form } : a) :
-    [...addresses, { id: `a${Date.now()}`, ...form }];
-    updateUser({ addresses: next });
+    if (editingId) {
+      await updateAddress(editingId, form);
+    } else {
+      await addAddress(form);
+    }
     cancelForm();
   };
 
   const handleDelete = (id: string) => {
-    updateUser({ addresses: addresses.filter((a) => a.id !== id) });
+    deleteAddress(id);
   };
 
   return (

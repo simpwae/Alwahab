@@ -10,36 +10,37 @@ import { Button } from '../../../components/ui/Button';
 import { useAuth } from '../../../context/AuthContext';
 
 interface PasswordErrors {
-  currentPassword?: string;
   newPassword?: string;
   confirmPassword?: string;
 }
 
 function AccountProfile() {
-  const { user, updateUser } = useAuth();
+  const { user, updateUser, changePassword } = useAuth();
   const [name, setName] = useState(user?.name ?? '');
   const [phone, setPhone] = useState(user?.phone ?? '');
-  const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordErrors, setPasswordErrors] = useState<PasswordErrors>({});
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) return;
-    updateUser({ name, phone });
+    await updateUser({ name, phone });
     toast.success('Profile updated');
   };
 
-  const handlePasswordSubmit = (e: React.FormEvent) => {
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errors: PasswordErrors = {};
-    if (!currentPassword.trim()) errors.currentPassword = 'Current password is required.';
     if (newPassword.length < 8) errors.newPassword = 'New password must be at least 8 characters.';
     if (confirmPassword !== newPassword) errors.confirmPassword = 'Passwords do not match.';
     setPasswordErrors(errors);
     if (Object.keys(errors).length > 0) return;
-    setCurrentPassword('');
+    const error = await changePassword(newPassword);
+    if (error) {
+      setPasswordErrors({ newPassword: error });
+      return;
+    }
     setNewPassword('');
     setConfirmPassword('');
     toast.success('Password updated');
@@ -91,16 +92,6 @@ function AccountProfile() {
         className="mt-6 max-w-md space-y-4 rounded-2xl border border-gray-100 p-5">
 
         <h2 className="font-display text-sm font-bold text-ink">Change Password</h2>
-
-        <FormField
-          label="Current Password"
-          id="current-password"
-          type="password"
-          leadingIcon={<LockIcon className="h-4 w-4" />}
-          value={currentPassword}
-          onChange={(e) => setCurrentPassword(e.target.value)}
-          error={passwordErrors.currentPassword} />
-
 
         <FormField
           label="New Password"
