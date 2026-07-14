@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'sonner';
 import { AdminProtectedRoute } from '../../../components/admin/AdminProtectedRoute';
 import { AdminLayout } from '../../../components/admin/AdminLayout';
@@ -16,16 +16,28 @@ function AdminSettings() {
     freeShippingThreshold: String(settings.shipping.freeShippingThreshold)
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // settings starts as an empty-string placeholder and is replaced once the
+  // async context fetch resolves - without this, saving before that fetch
+  // completes would silently overwrite real bank details with blanks.
+  useEffect(() => {
+    setBankTransfer(settings.bankTransfer);
+    setShipping({
+      flatRate: String(settings.shipping.flatRate),
+      freeShippingThreshold: String(settings.shipping.freeShippingThreshold)
+    });
+  }, [settings]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateSettings({
+    const error = await updateSettings({
       bankTransfer,
       shipping: {
         flatRate: Number(shipping.flatRate) || 0,
         freeShippingThreshold: Number(shipping.freeShippingThreshold) || 0
       }
     });
-    toast.success('Settings saved');
+    if (error) toast.error(error);
+    else toast.success('Settings saved');
   };
 
   return (

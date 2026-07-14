@@ -37,7 +37,7 @@ function AdminDiscounts() {
     setSelectedIds((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
   };
 
-  const handleApply = () => {
+  const handleApply = async () => {
     const pct = Number(discountPct);
     if (!pct || pct <= 0 || pct >= 100) {
       setError('Enter a discount percentage between 1 and 99.');
@@ -48,7 +48,11 @@ function AdminDiscounts() {
       return;
     }
     setError('');
-    applyDiscount(targetIds, pct);
+    const applyError = await applyDiscount(targetIds, pct);
+    if (applyError) {
+      toast.error(applyError);
+      return;
+    }
     toast.success(`${pct}% discount applied to ${targetIds.length} product${targetIds.length > 1 ? 's' : ''}`);
   };
 

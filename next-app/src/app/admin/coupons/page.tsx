@@ -10,7 +10,7 @@ import { StatusBadge } from '../../../components/ui/StatusBadge';
 import { EmptyState } from '../../../components/states/EmptyState';
 import { Button } from '../../../components/ui/Button';
 import { useCoupons } from '../../../context/CouponContext';
-import { useOrders } from '../../../context/OrderContext';
+import { useAdminOrders } from '../../../context/OrderContext';
 import { Coupon } from '../../../types';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
@@ -23,7 +23,7 @@ const STATUS_VARIANT: Record<Coupon['status'], 'success' | 'danger' | 'info'> = 
 
 function AdminCoupons() {
   const { coupons, deleteCoupon, deleteCoupons } = useCoupons();
-  const { orders } = useOrders();
+  const { orders } = useAdminOrders();
   const [selectedCodes, setSelectedCodes] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
@@ -47,17 +47,18 @@ function AdminCoupons() {
     );
   };
 
-  const handleDelete = (code: string) => {
+  const handleDelete = async (code: string) => {
     if (referencedCodes.has(code)) {
       toast.error(`Can't delete "${code}" — it's referenced by an existing order.`);
       return;
     }
     if (!window.confirm(`Delete coupon "${code}"? This can't be undone.`)) return;
-    deleteCoupon(code);
-    toast.success('Coupon deleted');
+    const error = await deleteCoupon(code);
+    if (error) toast.error(error);
+    else toast.success('Coupon deleted');
   };
 
-  const handleBulkDelete = () => {
+  const handleBulkDelete = async () => {
     const blocked = selectedCodes.filter((code) => referencedCodes.has(code));
     const deletable = selectedCodes.filter((code) => !referencedCodes.has(code));
     if (deletable.length === 0) {
@@ -65,7 +66,11 @@ function AdminCoupons() {
       return;
     }
     if (!window.confirm(`Delete ${deletable.length} coupon${deletable.length > 1 ? 's' : ''}? This can't be undone.`)) return;
-    deleteCoupons(deletable);
+    const error = await deleteCoupons(deletable);
+    if (error) {
+      toast.error(error);
+      return;
+    }
     setSelectedCodes([]);
     if (blocked.length > 0) {
       toast.warning(`${deletable.length} deleted, ${blocked.length} skipped — referenced by existing orders.`);

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import { PackageSearchIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -10,7 +10,7 @@ import { StatusBadge, PAYMENT_STATUS_VARIANT } from '../../../../components/ui/S
 import { EmptyState } from '../../../../components/states/EmptyState';
 import { FormField } from '../../../../components/ui/FormField';
 import { Button } from '../../../../components/ui/Button';
-import { useOrders } from '../../../../context/OrderContext';
+import { useAdminOrders } from '../../../../context/OrderContext';
 import { FulfillmentStatus, PaymentStatus } from '../../../../types';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
@@ -30,7 +30,7 @@ const PAYMENT_OPTIONS: PaymentStatus[] = [
 
 function AdminOrderDetail() {
   const { id } = useParams<{ id: string }>();
-  const { getOrderById, updateOrder } = useOrders();
+  const { getOrderById, updateOrder } = useAdminOrders();
   const order = id ? getOrderById(id) : undefined;
 
   const [fulfillmentStatus, setFulfillmentStatus] = useState(
@@ -42,6 +42,17 @@ function AdminOrderDetail() {
   const [trackingNumber, setTrackingNumber] = useState(
     order?.trackingNumber ?? ''
   );
+
+  // order arrives from an async context fetch, which may still be in
+  // flight when this component first mounts - the useState initializers
+  // above only run once, so without this the fallback values silently
+  // stick if `order` wasn't loaded yet at mount time.
+  useEffect(() => {
+    if (!order) return;
+    setFulfillmentStatus(order.fulfillmentStatus);
+    setPaymentStatus(order.paymentStatus);
+    setTrackingNumber(order.trackingNumber ?? '');
+  }, [order]);
 
   if (!order) {
     return (
@@ -55,13 +66,14 @@ function AdminOrderDetail() {
 
   }
 
-  const handleSave = () => {
-    updateOrder(order.id, {
+  const handleSave = async () => {
+    const error = await updateOrder(order.id, {
       fulfillmentStatus,
       paymentStatus,
       trackingNumber: trackingNumber.trim() || undefined
     });
-    toast.success('Order updated');
+    if (error) toast.error(error);
+    else toast.success('Order updated');
   };
 
   return (

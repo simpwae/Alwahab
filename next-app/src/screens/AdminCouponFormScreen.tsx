@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { AdminProtectedRoute } from '../components/admin/AdminProtectedRoute';
@@ -62,6 +62,14 @@ function AdminCouponForm() {
     {}
   );
 
+  // coupons arrives from an async context fetch, which may still be in
+  // flight when this component first mounts - without this, editing a
+  // coupon that hadn't loaded yet at mount time would silently show (and
+  // let you save) blank/default values instead of the real ones.
+  useEffect(() => {
+    if (existing) setValues(couponToForm(existing));
+  }, [existing]);
+
   if (isEdit && !existing) {
     return (
       <AdminLayout title="Coupon Not Found">
@@ -89,7 +97,7 @@ function AdminCouponForm() {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
@@ -103,13 +111,15 @@ function AdminCouponForm() {
       status: values.status
     };
 
-    if (isEdit && existing) {
-      updateCoupon(existing.code, patch);
-      toast.success('Coupon updated');
-    } else {
-      addCoupon({ code: values.code.trim().toUpperCase(), ...patch });
-      toast.success('Coupon created');
+    const error = isEdit && existing ?
+    await updateCoupon(existing.code, patch) :
+    await addCoupon({ code: values.code.trim().toUpperCase(), ...patch });
+
+    if (error) {
+      toast.error(error);
+      return;
     }
+    toast.success(isEdit ? 'Coupon updated' : 'Coupon created');
     router.push('/admin/coupons');
   };
 

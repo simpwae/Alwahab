@@ -1,42 +1,9 @@
 import { Coupon } from '../types';
 
-export const sampleCoupons: Coupon[] = [
-{
-  code: 'WELCOME10',
-  type: '%',
-  value: 10,
-  minOrder: 1000,
-  usageLimit: 500,
-  validFrom: '2026-01-01',
-  validTo: '2026-12-31',
-  status: 'Active'
-},
-{
-  code: 'SAVE500',
-  type: 'flat',
-  value: 500,
-  minOrder: 3000,
-  usageLimit: 200,
-  validFrom: '2026-01-01',
-  validTo: '2026-12-31',
-  status: 'Active'
-},
-{
-  code: 'EXPIRED20',
-  type: '%',
-  value: 20,
-  minOrder: 0,
-  usageLimit: 100,
-  validFrom: '2025-01-01',
-  validTo: '2025-12-31',
-  status: 'Expired'
-}];
-
-
 export function findValidCoupon(
 code: string,
 subtotal: number,
-coupons: Coupon[] = sampleCoupons)
+coupons: Coupon[])
 : {coupon: Coupon | null;error: string | null;} {
   const match = coupons.find(
     (c) => c.code.toLowerCase() === code.trim().toLowerCase()

@@ -11,14 +11,14 @@ import {
   FULFILLMENT_STATUS_VARIANT } from
 '../../../../components/ui/StatusBadge';
 import { EmptyState } from '../../../../components/states/EmptyState';
-import { useOrders } from '../../../../context/OrderContext';
+import { useAdminOrders } from '../../../../context/OrderContext';
 import { sampleUsers } from '../../../../data/sampleUsers';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
 
 function AdminCustomerDetail() {
   const { id } = useParams<{ id: string }>();
-  const { orders } = useOrders();
+  const { orders } = useAdminOrders();
   const user = sampleUsers.find((u) => u.id === id);
 
   if (!user) {

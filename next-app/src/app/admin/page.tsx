@@ -22,11 +22,11 @@ import { AdminProtectedRoute } from '../../components/admin/AdminProtectedRoute'
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { StatusBadge, FULFILLMENT_STATUS_VARIANT } from '../../components/ui/StatusBadge';
 import { EmptyState } from '../../components/states/EmptyState';
-import { useOrders } from '../../context/OrderContext';
+import { useAdminOrders } from '../../context/OrderContext';
+import { useReviews } from '../../context/ReviewContext';
+import { useProducts } from '../../context/ProductContext';
 import { Order } from '../../types';
-import { sampleProducts } from '../../data/sampleProducts';
 import { sampleUsers } from '../../data/sampleUsers';
-import { sampleReviews } from '../../data/sampleReviews';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
 const UNFULFILLED = new Set(['Pending', 'Confirmed']);
@@ -94,7 +94,9 @@ function SalesTooltip({ active, payload }: { active?: boolean; payload?: { paylo
 }
 
 function AdminDashboard() {
-  const { orders } = useOrders();
+  const { orders } = useAdminOrders();
+  const { reviews } = useReviews();
+  const { products } = useProducts();
   const [granularity, setGranularity] = useState<Granularity>('daily');
   const salesData = useMemo(() => groupSales(orders, granularity), [orders, granularity]);
 
@@ -102,10 +104,10 @@ function AdminDashboard() {
   const pendingOrders = orders.filter((o) =>
   UNFULFILLED.has(o.fulfillmentStatus)
   ).length;
-  const lowStockProducts = sampleProducts.filter(
+  const lowStockProducts = products.filter(
     (p) => p.stockQty <= p.lowStockThreshold
   ).length;
-  const pendingReviews = sampleReviews.filter(
+  const pendingReviews = reviews.filter(
     (r) => r.status === 'Pending'
   ).length;
   const recentOrders = orders.slice(0, 5);

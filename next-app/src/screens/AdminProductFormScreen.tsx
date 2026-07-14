@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'sonner';
 import { AdminProtectedRoute } from '../components/admin/AdminProtectedRoute';
@@ -75,6 +75,14 @@ function AdminProductForm() {
     {}
   );
 
+  // products arrives from an async context fetch, which may still be in
+  // flight when this component first mounts - without this, editing a
+  // product that hadn't loaded yet at mount time would silently show (and
+  // let you save) blank/default values instead of the real ones.
+  useEffect(() => {
+    if (existing) setValues(productToForm(existing));
+  }, [existing]);
+
   if (isEdit && !existing) {
     return (
       <AdminLayout title="Product Not Found">
@@ -101,7 +109,7 @@ function AdminProductForm() {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
 
@@ -112,8 +120,9 @@ function AdminProductForm() {
     Math.round((originalPrice - sellingPrice) / originalPrice * 100) :
     0;
 
+    let error: string | null;
     if (isEdit && existing) {
-      updateProduct(existing.id, {
+      error = await updateProduct(existing.id, {
         name: values.name,
         category: values.category,
         brand: values.brand,
@@ -128,7 +137,6 @@ function AdminProductForm() {
         status: values.status,
         featured: values.featured
       });
-      toast.success('Product updated');
     } else {
       const product: Product = {
         id: `p${Date.now()}`,
@@ -151,9 +159,14 @@ function AdminProductForm() {
         status: values.status,
         featured: values.featured
       };
-      addProduct(product);
-      toast.success('Product created');
+      error = await addProduct(product);
     }
+
+    if (error) {
+      toast.error(error);
+      return;
+    }
+    toast.success(isEdit ? 'Product updated' : 'Product created');
     router.push('/admin/products');
   };
 

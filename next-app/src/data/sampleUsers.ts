@@ -1,6 +1,5 @@
 import { User } from '../types';
 
-// Emails match sampleOrders.ts so mock login has real order history to show.
 export const sampleUsers: User[] = [
 {
   id: 'u1',

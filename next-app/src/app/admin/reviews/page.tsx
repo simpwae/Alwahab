@@ -22,9 +22,10 @@ function AdminReviews() {
   const { reviews, updateReview } = useReviews();
   const { products } = useProducts();
 
-  const handleStatusChange = (id: string, status: ReviewStatus) => {
-    updateReview(id, { status });
-    toast.success(`Review ${status.toLowerCase()}`);
+  const handleStatusChange = async (id: string, status: ReviewStatus) => {
+    const error = await updateReview(id, { status });
+    if (error) toast.error(error);
+    else toast.success(`Review ${status.toLowerCase()}`);
   };
 
   return (

@@ -45,10 +45,13 @@ export function TrackOrderScreen() {
   const [orderId, setOrderId] = useState(searchParams.get('orderId') ?? '');
   const [email, setEmail] = useState(searchParams.get('email') ?? '');
   const [searched, setSearched] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
   const [result, setResult] = useState<Order | null>(null);
-  const runLookup = (id: string, mail: string) => {
+  const runLookup = async (id: string, mail: string) => {
     if (!id.trim() || !mail.trim()) return;
-    const found = findOrder(id, mail);
+    setIsSearching(true);
+    const found = await findOrder(id, mail);
+    setIsSearching(false);
     setResult(found ?? null);
     setSearched(true);
   };
@@ -114,9 +117,10 @@ export function TrackOrderScreen() {
             size="lg"
             fullWidth
             className="mt-4"
+            disabled={isSearching}
             icon={<SearchIcon className="h-4 w-4" />}>
 
-            Track Order
+            {isSearching ? 'Searching…' : 'Track Order'}
           </Button>
         </form>
 

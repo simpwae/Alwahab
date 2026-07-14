@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { toast } from 'sonner';
 import {
   ArrowLeftIcon,
   UserIcon,
@@ -26,11 +27,11 @@ import {
 '../../components/checkout/StripeCardForm';
 import { CheckoutOrderSummary } from '../../components/checkout/CheckoutOrderSummary';
 import { useCart } from '../../context/CartContext';
-import { useOrders, generateOrderId } from '../../context/OrderContext';
+import { useOrders } from '../../context/OrderContext';
 import { useStoreSettings } from '../../context/StoreSettingsContext';
 import { useCoupons } from '../../context/CouponContext';
 import { findValidCoupon, calculateDiscount } from '../../data/sampleCoupons';
-import { Order, PaymentMethod } from '../../types';
+import { PaymentMethod } from '../../types';
 export interface ContactShippingValues {
   fullName: string;
   email: string;
@@ -79,7 +80,7 @@ function validateCard(values: CardFormValues) {
 }
 export default function Checkout() {
   const { lines, subtotal, clearCart, appliedCode } = useCart();
-  const { addOrder } = useOrders();
+  const { placeOrder } = useOrders();
   const { settings } = useStoreSettings();
   const { coupons } = useCoupons();
   const router = useRouter();
@@ -146,7 +147,7 @@ export default function Checkout() {
       [field]: value
     }));
   };
-  const handlePlaceOrder = () => {
+  const handlePlaceOrder = async () => {
     const contactValidation = validateContact(contact);
     setContactErrors(contactValidation);
     setTouched({
@@ -176,9 +177,7 @@ export default function Checkout() {
     paymentMethod === 'BankTransfer' ?
     'AwaitingVerification' :
     'Pending';
-    const order: Order = {
-      id: generateOrderId(),
-      date: new Date().toISOString().slice(0, 10),
+    const { order, error } = await placeOrder({
       customer: contact.fullName,
       email: contact.email,
       phone: contact.phone,
@@ -200,15 +199,15 @@ export default function Checkout() {
       total,
       paymentMethod,
       paymentStatus,
-      fulfillmentStatus: 'Pending',
       receiptImage: receiptFile ? URL.createObjectURL(receiptFile) : undefined
-    };
-    setTimeout(() => {
-      addOrder(order);
-      clearCart();
-      setIsSubmitting(false);
-      router.push(`/order-confirmation/${order.id}`);
-    }, 700);
+    });
+    setIsSubmitting(false);
+    if (error || !order) {
+      toast.error(error ?? 'Could not place order. Please try again.');
+      return;
+    }
+    clearCart();
+    router.push(`/order-confirmation/${order.id}`);
   };
   if (lines.length === 0) {
     return (
