@@ -73,7 +73,7 @@ Two components — `AdminProductForm` and `AdminCouponForm` — are each used by
 
 Verified with `next build` (32 routes total now — up from 17 after Wave 2, 15 new under `/admin/*`), `npx tsc --noEmit` (clean), `npx eslint .` (0 errors — the only warnings are the same pre-existing `<img>`/`no-img-element` ones from Waves 1–2, none new), `npx vitest run` (26/26 passed), and a full Playwright pass against `next dev`: unauthenticated `/admin` → `/admin/login`; log in; walk all 8 sidebar sections; open an order and change its fulfillment status; edit a product and save; open the empty "Add Product" form and cancel; apply a category-wide discount and confirm it's reflected on the Products list without leaving the client-side session; open a customer detail page; create-then-cancel and edit-then-save a coupon; approve a review (or confirm none pending); save store settings; log out from a protected page and confirm it lands on `/admin/login` (not stuck — the race this session pre-emptively guarded against); confirm `/admin/orders` is protected again post-logout. Zero console errors on the final run.
 
-Both Wave 1+2 and Wave 3 are **committed**. **Not pushed** — no push requested yet.
+Waves 1–3, 6b, and 6c Wave 1 are all **committed and pushed to `origin/main`** (pushed after 6b + 6c Wave 1 landed, at the user's request).
 
 **`/admin/*` (Wave 3) is done.** All of 6a (routing/framework parity: 32 routes across public storefront, customer account, and admin) is now complete on mock data.
 
