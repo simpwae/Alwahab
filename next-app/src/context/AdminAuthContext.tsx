@@ -8,6 +8,7 @@ const STORAGE_KEY = 'alwahab_admin';
 
 interface AdminAuthContextValue {
   admin: Admin | null;
+  isInitialized: boolean;
   login: (email: string) => boolean;
   logout: () => void;
 }
@@ -21,9 +22,14 @@ function loadStoredAdmin(): Admin | null {
 
 export function AdminAuthProvider({ children }: {children: ReactNode;}) {
   const [admin, setAdmin] = useState<Admin | null>(null);
+  const [isInitialized, setIsInitialized] = useState(false);
 
+  // localStorage isn't available during SSR, so `admin` always starts null here.
+  // isInitialized lets AdminProtectedRoute tell "still checking" apart from
+  // "confirmed logged out" instead of redirecting before this effect runs.
   useEffect(() => {
     setAdmin(loadStoredAdmin());
+    setIsInitialized(true);
   }, []);
 
   const persist = (next: Admin | null) => {
@@ -45,7 +51,7 @@ export function AdminAuthProvider({ children }: {children: ReactNode;}) {
   const logout = () => persist(null);
 
   return (
-    <AdminAuthContext.Provider value={{ admin, login, logout }}>
+    <AdminAuthContext.Provider value={{ admin, isInitialized, login, logout }}>
       {children}
     </AdminAuthContext.Provider>);
 
