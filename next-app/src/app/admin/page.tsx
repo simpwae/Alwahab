@@ -25,8 +25,8 @@ import { EmptyState } from '../../components/states/EmptyState';
 import { useAdminOrders } from '../../context/OrderContext';
 import { useReviews } from '../../context/ReviewContext';
 import { useProducts } from '../../context/ProductContext';
+import { useCustomers } from '../../context/CustomerContext';
 import { Order } from '../../types';
-import { sampleUsers } from '../../data/sampleUsers';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
 const UNFULFILLED = new Set(['Pending', 'Confirmed']);
@@ -97,6 +97,7 @@ function AdminDashboard() {
   const { orders } = useAdminOrders();
   const { reviews } = useReviews();
   const { products } = useProducts();
+  const { customers } = useCustomers();
   const [granularity, setGranularity] = useState<Granularity>('daily');
   const salesData = useMemo(() => groupSales(orders, granularity), [orders, granularity]);
 
@@ -141,7 +142,7 @@ function AdminDashboard() {
         <StatTile
           icon={<UsersIcon className="h-5 w-5" />}
           label="Total Customers"
-          value={String(sampleUsers.length)}
+          value={String(customers.length)}
           tone="primary" />
 
         <StatTile

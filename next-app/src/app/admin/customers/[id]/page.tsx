@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { UserIcon, PackageSearchIcon, ChevronRightIcon } from 'lucide-react';
@@ -12,14 +12,38 @@ import {
 '../../../../components/ui/StatusBadge';
 import { EmptyState } from '../../../../components/states/EmptyState';
 import { useAdminOrders } from '../../../../context/OrderContext';
-import { sampleUsers } from '../../../../data/sampleUsers';
+import { useCustomers } from '../../../../context/CustomerContext';
+import { createClient } from '../../../../lib/supabase/client';
+import { Address } from '../../../../types';
+
+// Admin-only read: addresses_select_admin already lets an admin session
+// SELECT every row, so this is a plain table query, not an RPC like
+// admin_list_customers() (that one needed a join into auth.users instead).
+const supabase = createClient('alwahab-admin-auth');
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
 
 function AdminCustomerDetail() {
   const { id } = useParams<{ id: string }>();
   const { orders } = useAdminOrders();
-  const user = sampleUsers.find((u) => u.id === id);
+  const { customers } = useCustomers();
+  const user = customers.find((u) => u.id === id);
+
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  useEffect(() => {
+    if (!id) return;
+    supabase.from('addresses').select('*').eq('user_id', id).then(({ data }) => {
+      setAddresses(
+        (data ?? []).map((row) => ({
+          id: row.id,
+          label: row.label,
+          line1: row.line1,
+          city: row.city,
+          phone: row.phone
+        }))
+      );
+    });
+  }, [id]);
 
   if (!user) {
     return (
@@ -47,7 +71,7 @@ function AdminCustomerDetail() {
           </div>
           <div>
             <p className="text-xs text-ink-muted">Phone</p>
-            <p className="text-sm font-medium text-ink">{user.phone}</p>
+            <p className="text-sm font-medium text-ink">{user.phone ?? '—'}</p>
           </div>
           <div>
             <p className="text-xs text-ink-muted">Joined</p>
@@ -55,11 +79,11 @@ function AdminCustomerDetail() {
           </div>
           <div>
             <p className="text-xs text-ink-muted">Addresses</p>
-            {user.addresses.length === 0 ?
+            {addresses.length === 0 ?
             <p className="text-sm text-ink-muted">No saved addresses.</p> :
 
             <ul className="mt-1 space-y-2">
-                {user.addresses.map((a) =>
+                {addresses.map((a) =>
               <li key={a.id} className="text-sm text-ink">
                     <span className="font-medium">{a.label}:</span> {a.line1},{' '}
                     {a.city}

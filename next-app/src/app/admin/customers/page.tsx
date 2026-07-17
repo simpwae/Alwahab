@@ -6,15 +6,16 @@ import { UsersIcon, ChevronRightIcon } from 'lucide-react';
 import { AdminProtectedRoute } from '../../../components/admin/AdminProtectedRoute';
 import { AdminLayout } from '../../../components/admin/AdminLayout';
 import { EmptyState } from '../../../components/states/EmptyState';
-import { useOrders } from '../../../context/OrderContext';
-import { sampleUsers } from '../../../data/sampleUsers';
+import { useAdminOrders } from '../../../context/OrderContext';
+import { useCustomers } from '../../../context/CustomerContext';
 
 function AdminCustomers() {
-  const { orders } = useOrders();
+  const { orders } = useAdminOrders();
+  const { customers } = useCustomers();
 
   return (
     <AdminLayout title="Customers">
-      {sampleUsers.length === 0 ?
+      {customers.length === 0 ?
       <EmptyState
         icon={<UsersIcon className="h-8 w-8" />}
         title="No customers yet"
@@ -22,7 +23,7 @@ function AdminCustomers() {
 
 
       <ul className="divide-y divide-gray-100 rounded-2xl border border-gray-100 bg-white">
-          {sampleUsers.map((user) => {
+          {customers.map((user) => {
             const orderCount = orders.filter(
               (o) => o.email?.toLowerCase() === user.email.toLowerCase()
             ).length;
@@ -37,7 +38,8 @@ function AdminCustomers() {
                       {user.name}
                     </p>
                     <p className="mt-0.5 text-xs text-ink-muted">
-                      {user.email} · {user.phone}
+                      {user.email}
+                      {user.phone ? ` · ${user.phone}` : ''}
                     </p>
                   </div>
                   <div className="flex items-center gap-3">

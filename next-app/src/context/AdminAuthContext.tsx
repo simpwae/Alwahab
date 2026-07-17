@@ -15,6 +15,7 @@ interface AdminAuthContextValue {
   isInitialized: boolean;
   login: (email: string, password: string) => Promise<string | null>;
   logout: () => Promise<void>;
+  changePassword: (newPassword: string) => Promise<string | null>;
 }
 
 const AdminAuthContext = createContext<AdminAuthContextValue | undefined>(undefined);
@@ -73,8 +74,13 @@ export function AdminAuthProvider({ children }: {children: ReactNode;}) {
     await supabase.auth.signOut();
   };
 
+  const changePassword = async (newPassword: string) => {
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    return error ? error.message : null;
+  };
+
   return (
-    <AdminAuthContext.Provider value={{ admin, isInitialized, login, logout }}>
+    <AdminAuthContext.Provider value={{ admin, isInitialized, login, logout, changePassword }}>
       {children}
     </AdminAuthContext.Provider>);
 

@@ -15,6 +15,7 @@ import {
   PercentIcon,
   MessageSquareIcon,
   SettingsIcon,
+  UserIcon,
   LogOutIcon } from
 'lucide-react';
 import { useAdminAuth } from '../../context/AdminAuthContext';
@@ -27,7 +28,8 @@ const NAV_ITEMS = [
 { label: 'Customers', href: '/admin/customers', icon: UsersIcon },
 { label: 'Coupons', href: '/admin/coupons', icon: TagIcon },
 { label: 'Reviews', href: '/admin/reviews', icon: MessageSquareIcon },
-{ label: 'Settings', href: '/admin/settings', icon: SettingsIcon }];
+{ label: 'Settings', href: '/admin/settings', icon: SettingsIcon },
+{ label: 'Profile', href: '/admin/profile', icon: UserIcon }];
 
 
 function BrandMark() {
