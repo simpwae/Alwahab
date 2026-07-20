@@ -6,7 +6,9 @@ import {
   FacebookIcon,
   InstagramIcon,
   MessageCircleIcon,
-  CreditCardIcon } from
+  CreditCardIcon,
+  MapPinIcon,
+  PhoneIcon } from
 'lucide-react';
 import { Logo } from './Logo';
 const QUICK_LINKS = [
@@ -33,6 +35,18 @@ const QUICK_LINKS = [
 {
   label: 'Return Policy',
   href: '/return-policy'
+},
+{
+  label: 'Shipping Policy',
+  href: '/shipping-policy'
+},
+{
+  label: 'Privacy Policy',
+  href: '/privacy-policy'
+},
+{
+  label: 'Terms & Conditions',
+  href: '/terms'
 }];
 
 const CATEGORIES = [
@@ -68,6 +82,18 @@ export function Footer() {
             home &amp; kitchen, gadgets, and lifestyle products — quality you
             can count on.
           </p>
+          <div className="mt-4 space-y-2">
+            <p className="flex items-start gap-2 text-sm text-ink-muted">
+              <MapPinIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+              <span>Shop # 14, Block B, National Market, Karkhano, Peshawar, Pakistan</span>
+            </p>
+            <a
+              href="tel:+923255897659"
+              className="flex items-center gap-2 text-sm text-ink-muted transition-colors hover:text-primary">
+              <PhoneIcon className="h-4 w-4 shrink-0 text-primary" />
+              <span>+92 325 5897659</span>
+            </a>
+          </div>
           <div className="mt-4 flex items-center gap-3">
             <a
               href="#"
