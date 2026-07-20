@@ -23,6 +23,7 @@ interface OrderItemRow {
   image: string | null;
   price: number;
   qty: number;
+  size: string | null;
 }
 
 interface OrderRow {
@@ -46,7 +47,7 @@ interface OrderRow {
 }
 
 function itemFromRow(row: OrderItemRow): OrderItem {
-  return { productId: row.product_id, name: row.name, image: row.image ?? '', price: row.price, qty: row.qty };
+  return { productId: row.product_id, name: row.name, image: row.image ?? '', price: row.price, qty: row.qty, size: row.size ?? undefined };
 }
 
 function fromRow(row: OrderRow): Order {
@@ -149,7 +150,7 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
       p_payment_status: input.paymentStatus,
       p_receipt_image: input.receiptImage ?? null,
       p_items: input.items.map((i) => ({
-        product_id: i.productId, name: i.name, image: i.image, price: i.price, qty: i.qty
+        product_id: i.productId, name: i.name, image: i.image, price: i.price, qty: i.qty, size: i.size ?? null
       }))
     });
     if (error) return { order: null, error: error.message };

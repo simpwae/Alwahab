@@ -12,6 +12,7 @@ interface AuthContextValue {
   isInitialized: boolean;
   login: (email: string, password: string) => Promise<string | null>;
   signup: (name: string, email: string, phone: string, password: string) => Promise<{ error: string | null; userId: string | null }>;
+  signInWithGoogle: () => Promise<string | null>;
   logout: () => Promise<void>;
   updateUser: (patch: { name?: string; phone?: string }) => Promise<void>;
   changePassword: (newPassword: string) => Promise<string | null>;
@@ -89,6 +90,14 @@ export function AuthProvider({ children }: {children: ReactNode;}) {
     return { error: null, userId: data.user?.id ?? null };
   };
 
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/auth/callback` }
+    });
+    return error ? error.message : null;
+  };
+
   const logout = async () => {
     await supabase.auth.signOut();
   };
@@ -135,6 +144,7 @@ export function AuthProvider({ children }: {children: ReactNode;}) {
         isInitialized,
         login,
         signup,
+        signInWithGoogle,
         logout,
         updateUser,
         changePassword,

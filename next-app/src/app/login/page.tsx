@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { LogInIcon, MailIcon, LockIcon } from 'lucide-react';
 import { Header } from '../../components/layout/Header';
 import { TopUtilityBar } from '../../components/layout/TopUtilityBar';
@@ -11,15 +12,17 @@ import { CartDrawer } from '../../components/CartDrawer';
 import { Breadcrumb } from '../../components/listing/Breadcrumb';
 import { FormField } from '../../components/ui/FormField';
 import { Button } from '../../components/ui/Button';
+import { GoogleIcon } from '../../components/icons/GoogleIcon';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, signInWithGoogle } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +38,17 @@ export default function Login() {
       return;
     }
     router.replace('/account');
+  };
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleSubmitting(true);
+    const googleError = await signInWithGoogle();
+    if (googleError) {
+      setIsGoogleSubmitting(false);
+      toast.error(googleError);
+    }
+    // On success the browser navigates away to Google, so isGoogleSubmitting
+    // intentionally stays true until then - there's no "done" state to reset to.
   };
 
   return (
@@ -87,6 +101,24 @@ export default function Login() {
             icon={<LogInIcon className="h-4 w-4" />}>
 
             {isSubmitting ? 'Signing In…' : 'Sign In'}
+          </Button>
+
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-gray-200" />
+            <span className="text-xs text-ink-muted">or continue with</span>
+            <span className="h-px flex-1 bg-gray-200" />
+          </div>
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            fullWidth
+            disabled={isGoogleSubmitting}
+            icon={<GoogleIcon />}
+            onClick={handleGoogleSignIn}>
+
+            {isGoogleSubmitting ? 'Redirecting…' : 'Continue with Google'}
           </Button>
 
           <p className="text-center text-sm text-ink-muted">

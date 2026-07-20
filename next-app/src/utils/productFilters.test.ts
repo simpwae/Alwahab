@@ -10,6 +10,7 @@ function makeProduct(overrides: Partial<Product>): Product {
     category: 'Electronics',
     brand: 'BrandA',
     images: [],
+    sizes: [],
     description: '',
     specs: [],
     originalPrice: 1000,

@@ -25,12 +25,15 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
   const { addToCart } = useCart();
   const [qty, setQty] = useState(1);
   const [activeImage, setActiveImage] = useState(0);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
   const isOutOfStock = product ?
   product.status === 'OutOfStock' || product.stockQty === 0 :
   false;
+  const sizeRequired = !!product && product.sizes.length > 0 && !selectedSize;
   const handleClose = () => {
     setQty(1);
     setActiveImage(0);
+    setSelectedSize(undefined);
     onClose();
   };
   return (
@@ -159,6 +162,24 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                   {product.description}
                 </p>
 
+                {!isOutOfStock && product.sizes.length > 0 &&
+              <div className="mt-4">
+                    <span className="text-sm font-medium text-ink">Size</span>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      {product.sizes.map((size) =>
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setSelectedSize(size)}
+                    className={`rounded-xl border px-3 py-1.5 text-sm font-medium transition-colors ${selectedSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-gray-300 text-ink hover:border-primary'}`}>
+
+                          {size}
+                        </button>
+                  )}
+                    </div>
+                  </div>
+              }
+
                 {!isOutOfStock &&
               <div className="mt-4 flex items-center gap-3">
                     <div className="flex items-center rounded-xl border border-gray-200">
@@ -192,14 +213,14 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                   variant="primary"
                   size="lg"
                   fullWidth
-                  disabled={isOutOfStock}
+                  disabled={isOutOfStock || sizeRequired}
                   icon={<ShoppingCartIcon className="h-4 w-4" />}
                   onClick={() => {
-                    addToCart(product, qty);
+                    addToCart(product, qty, selectedSize);
                     handleClose();
                   }}>
 
-                    {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                    {isOutOfStock ? 'Out of Stock' : sizeRequired ? 'Select a Size' : 'Add to Cart'}
                   </Button>
                   <Link
                   href={`/product/${product.id}`}

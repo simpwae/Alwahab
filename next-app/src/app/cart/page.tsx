@@ -97,7 +97,7 @@ export default function Cart() {
             <div className="min-w-0 flex-1 rounded-2xl border border-gray-100">
               <ul className="divide-y divide-gray-100">
                 {lines.map((line) =>
-              <li key={line.productId} className="flex gap-4 p-4 sm:p-5">
+              <li key={`${line.productId}-${line.size ?? ''}`} className="flex gap-4 p-4 sm:p-5">
                     <Link
                   href={`/product/${line.productId}`}
                   className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-gray-100 sm:h-24 sm:w-24">
@@ -119,12 +119,15 @@ export default function Cart() {
                         <button
                       type="button"
                       aria-label={`Remove ${line.name} from cart`}
-                      onClick={() => removeFromCart(line.productId)}
+                      onClick={() => removeFromCart(line.productId, line.size)}
                       className="shrink-0 rounded-full p-1.5 text-ink-muted transition-colors hover:bg-red-50 hover:text-red-600">
 
                           <TrashIcon className="h-4 w-4" />
                         </button>
                       </div>
+                      {line.size &&
+                    <span className="text-xs text-ink-muted">Size: {line.size}</span>
+                    }
                       <span className="mt-1 font-display text-base font-bold text-ink sm:text-lg">
                         PKR {PKR.format(line.price)}
                       </span>
@@ -134,7 +137,7 @@ export default function Cart() {
                         type="button"
                         aria-label={`Decrease quantity of ${line.name}`}
                         onClick={() =>
-                        updateQty(line.productId, line.qty - 1)
+                        updateQty(line.productId, line.qty - 1, line.size)
                         }
                         disabled={line.qty <= 1}
                         className="flex h-8 w-8 items-center justify-center text-ink-muted hover:text-ink disabled:opacity-40">
@@ -148,7 +151,7 @@ export default function Cart() {
                         type="button"
                         aria-label={`Increase quantity of ${line.name}`}
                         onClick={() =>
-                        updateQty(line.productId, line.qty + 1)
+                        updateQty(line.productId, line.qty + 1, line.size)
                         }
                         disabled={line.qty >= line.stockQty}
                         className="flex h-8 w-8 items-center justify-center text-ink-muted hover:text-ink disabled:opacity-40">

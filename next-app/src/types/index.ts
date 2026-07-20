@@ -7,6 +7,7 @@ export interface Product {
   category: string;
   brand: string;
   images: string[];
+  sizes: string[];
   description: string;
   specs: string[];
   originalPrice: number;
@@ -42,6 +43,7 @@ export interface OrderItem {
   image: string;
   price: number;
   qty: number;
+  size?: string;
 }
 
 export interface Order {

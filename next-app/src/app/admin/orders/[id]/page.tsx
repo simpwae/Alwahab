@@ -102,7 +102,7 @@ function AdminOrderDetail() {
           </div>
           <ul className="divide-y divide-gray-100">
             {order.items.map((item) =>
-            <li key={item.productId} className="flex items-center gap-3 p-4 sm:p-5">
+            <li key={`${item.productId}-${item.size ?? ''}`} className="flex items-center gap-3 p-4 sm:p-5">
                 <img
                 src={item.image}
                 alt={item.name}
@@ -113,7 +113,7 @@ function AdminOrderDetail() {
                     {item.name}
                   </p>
                   <p className="text-xs text-ink-muted">
-                    Qty {item.qty} · PKR {PKR.format(item.price)}
+                    {item.size ? `Size ${item.size} · ` : ''}Qty {item.qty} · PKR {PKR.format(item.price)}
                   </p>
                 </div>
                 <span className="shrink-0 text-sm font-semibold text-ink">

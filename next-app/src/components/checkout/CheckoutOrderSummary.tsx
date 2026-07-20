@@ -36,7 +36,7 @@ export function CheckoutOrderSummary({
 
       <ul className="mt-4 max-h-64 space-y-3 overflow-y-auto pr-1">
         {lines.map((line) =>
-        <li key={line.productId} className="flex items-center gap-3">
+        <li key={`${line.productId}-${line.size ?? ''}`} className="flex items-center gap-3">
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-gray-200">
               <img
               src={line.image}
@@ -51,6 +51,9 @@ export function CheckoutOrderSummary({
               <p className="line-clamp-1 text-sm font-medium text-ink">
                 {line.name}
               </p>
+              {line.size &&
+              <p className="text-xs text-ink-muted">Size: {line.size}</p>
+              }
               <p className="text-xs text-ink-muted">
                 PKR {PKR.format(line.price)}
               </p>

@@ -38,6 +38,7 @@ export default function ProductDetail() {
   const { products } = useProducts();
   const { reviews: allReviews } = useReviews();
   const [qty, setQty] = useState(1);
+  const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
   const product = useMemo(() => products.find((p) => p.id === id), [id, products]);
   const reviews = useMemo(
     () => allReviews.filter((r) => r.productId === id),
@@ -77,6 +78,7 @@ export default function ProductDetail() {
 
   }
   const isOutOfStock = product.status === 'OutOfStock' || product.stockQty === 0;
+  const sizeRequired = product.sizes.length > 0 && !selectedSize;
   const isLowStock =
   !isOutOfStock && product.stockQty <= product.lowStockThreshold;
   const savings = product.originalPrice - product.sellingPrice;
@@ -168,6 +170,24 @@ export default function ProductDetail() {
               </div>
             </div>
 
+            {!isOutOfStock && product.sizes.length > 0 &&
+            <div className="mt-5">
+                <span className="text-sm font-medium text-ink">Size</span>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {product.sizes.map((size) =>
+                <button
+                  key={size}
+                  type="button"
+                  onClick={() => setSelectedSize(size)}
+                  className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${selectedSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-gray-300 text-ink hover:border-primary'}`}>
+
+                      {size}
+                    </button>
+                )}
+                </div>
+              </div>
+            }
+
             {!isOutOfStock &&
             <div className="mt-5 flex items-center gap-3">
                 <span className="text-sm font-medium text-ink">Quantity</span>
@@ -202,23 +222,23 @@ export default function ProductDetail() {
                 variant="secondary"
                 size="lg"
                 fullWidth
-                disabled={isOutOfStock}
+                disabled={isOutOfStock || sizeRequired}
                 icon={<ShoppingCartIcon className="h-4 w-4" />}
-                onClick={() => addToCart(product, qty)}>
+                onClick={() => addToCart(product, qty, selectedSize)}>
 
-                {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+                {isOutOfStock ? 'Out of Stock' : sizeRequired ? 'Select a Size' : 'Add to Cart'}
               </Button>
               <Link
-                href={isOutOfStock ? '#' : '/checkout'}
-                aria-disabled={isOutOfStock}
+                href={isOutOfStock || sizeRequired ? '#' : '/checkout'}
+                aria-disabled={isOutOfStock || sizeRequired}
                 onClick={(e) => {
-                  if (isOutOfStock) {
+                  if (isOutOfStock || sizeRequired) {
                     e.preventDefault();
                     return;
                   }
-                  addToCart(product, qty);
+                  addToCart(product, qty, selectedSize);
                 }}
-                className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-white transition-colors sm:w-full ${isOutOfStock ? 'pointer-events-none bg-gray-200 text-ink-muted' : 'bg-accent hover:bg-accent-dark'}`}>
+                className={`flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-medium text-white transition-colors sm:w-full ${isOutOfStock || sizeRequired ? 'pointer-events-none bg-gray-200 text-ink-muted' : 'bg-accent hover:bg-accent-dark'}`}>
 
                 <ZapIcon className="h-4 w-4" />
                 Buy Now

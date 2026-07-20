@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { toast } from 'sonner';
+import { UploadCloudIcon, XIcon, Loader2Icon } from 'lucide-react';
 import { AdminProtectedRoute } from '../components/admin/AdminProtectedRoute';
 import { AdminLayout } from '../components/admin/AdminLayout';
 import { FormField } from '../components/ui/FormField';
@@ -14,11 +15,27 @@ import { CATEGORIES } from '../data/categories';
 
 const STATUSES: ProductStatus[] = ['Active', 'Draft', 'OutOfStock'];
 
+async function uploadToCloudinary(file: File): Promise<string> {
+  const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
+  const body = new FormData();
+  body.append('file', file);
+  body.append('upload_preset', uploadPreset!);
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+    method: 'POST',
+    body
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error?.message ?? 'Upload failed');
+  return data.secure_url as string;
+}
+
 interface FormValues {
   name: string;
   category: string;
   brand: string;
-  image: string;
+  images: string[];
+  sizes: string[];
   description: string;
   sku: string;
   originalPrice: string;
@@ -34,7 +51,8 @@ function productToForm(p: Product): FormValues {
     name: p.name,
     category: p.category,
     brand: p.brand,
-    image: p.images[0] ?? '',
+    images: p.images,
+    sizes: p.sizes,
     description: p.description,
     sku: p.sku,
     originalPrice: String(p.originalPrice),
@@ -50,7 +68,8 @@ const EMPTY_FORM: FormValues = {
   name: '',
   category: CATEGORIES[0],
   brand: '',
-  image: '',
+  images: [],
+  sizes: [],
   description: '',
   sku: '',
   originalPrice: '',
@@ -74,6 +93,9 @@ function AdminProductForm() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormValues, string>>>(
     {}
   );
+  const [uploading, setUploading] = useState(false);
+  const [sizeInput, setSizeInput] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // products arrives from an async context fetch, which may still be in
   // flight when this component first mounts - without this, editing a
@@ -93,6 +115,39 @@ function AdminProductForm() {
 
   const handleChange = (field: keyof FormValues, value: string | boolean) => {
     setValues((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleFilesSelected = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files ?? []);
+    e.target.value = '';
+    if (files.length === 0) return;
+    setUploading(true);
+    try {
+      const urls = await Promise.all(files.map(uploadToCloudinary));
+      setValues((prev) => ({ ...prev, images: [...prev.images, ...urls] }));
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Image upload failed.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const removeImage = (index: number) => {
+    setValues((prev) => ({ ...prev, images: prev.images.filter((_, i) => i !== index) }));
+  };
+
+  const addSize = () => {
+    const size = sizeInput.trim();
+    if (!size || values.sizes.includes(size)) {
+      setSizeInput('');
+      return;
+    }
+    setValues((prev) => ({ ...prev, sizes: [...prev.sizes, size] }));
+    setSizeInput('');
+  };
+
+  const removeSize = (size: string) => {
+    setValues((prev) => ({ ...prev, sizes: prev.sizes.filter((s) => s !== size) }));
   };
 
   const validate = (): boolean => {
@@ -126,7 +181,8 @@ function AdminProductForm() {
         name: values.name,
         category: values.category,
         brand: values.brand,
-        images: values.image ? [values.image] : existing.images,
+        images: values.images,
+        sizes: values.sizes,
         description: values.description,
         sku: values.sku,
         originalPrice,
@@ -143,7 +199,8 @@ function AdminProductForm() {
         name: values.name,
         category: values.category,
         brand: values.brand,
-        images: values.image ? [values.image] : [],
+        images: values.images,
+        sizes: values.sizes,
         description: values.description,
         specs: [],
         originalPrice,
@@ -206,13 +263,94 @@ function AdminProductForm() {
 
         </div>
 
-        <FormField
-          label="Image URL"
-          id="image"
-          placeholder="https://…"
-          value={values.image}
-          onChange={(e) => handleChange('image', e.target.value)} />
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-ink">Images</label>
+          <div className="flex flex-wrap gap-3">
+            {values.images.map((url, i) =>
+            <div key={url + i} className="group relative h-20 w-20 shrink-0">
+                <img
+                src={url}
+                alt=""
+                className="h-full w-full rounded-xl border border-gray-200 object-cover" />
 
+                <button
+                type="button"
+                aria-label="Remove image"
+                onClick={() => removeImage(i)}
+                className="absolute -right-2 -top-2 flex h-6 w-6 items-center justify-center rounded-full bg-ink text-white shadow-sm hover:bg-red-600">
+
+                  <XIcon className="h-3.5 w-3.5" />
+                </button>
+                {i === 0 &&
+              <span className="absolute bottom-1 left-1 rounded bg-black/60 px-1.5 py-0.5 text-[10px] font-medium text-white">
+                    Cover
+                  </span>
+              }
+              </div>
+            )}
+            <button
+              type="button"
+              disabled={uploading}
+              onClick={() => fileInputRef.current?.click()}
+              className="flex h-20 w-20 shrink-0 flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-gray-300 text-ink-muted transition-colors hover:border-primary hover:text-primary disabled:opacity-50">
+
+              {uploading ?
+              <Loader2Icon className="h-5 w-5 animate-spin" /> :
+
+              <UploadCloudIcon className="h-5 w-5" />
+              }
+              <span className="text-[11px] font-medium">Add</span>
+            </button>
+          </div>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            onChange={handleFilesSelected}
+            className="hidden"
+            aria-label="Upload product images" />
+
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-ink">Sizes</label>
+          <div className="flex flex-wrap items-center gap-2">
+            {values.sizes.map((size) =>
+            <span
+              key={size}
+              className="flex items-center gap-1.5 rounded-full bg-surface px-3 py-1 text-sm font-medium text-ink">
+
+                {size}
+                <button
+                type="button"
+                aria-label={`Remove size ${size}`}
+                onClick={() => removeSize(size)}
+                className="text-ink-muted hover:text-red-600">
+
+                  <XIcon className="h-3.5 w-3.5" />
+                </button>
+              </span>
+            )}
+            <input
+              type="text"
+              value={sizeInput}
+              onChange={(e) => setSizeInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ',') {
+                  e.preventDefault();
+                  addSize();
+                }
+              }}
+              onBlur={addSize}
+              placeholder="e.g. S, M, L or 150cm — press Enter"
+              className="min-w-[10rem] flex-1 rounded-xl border border-gray-300 bg-white px-3.5 py-1.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+
+          </div>
+          <p className="mt-1.5 text-xs text-ink-muted">
+            Leave empty if this product doesn&apos;t come in sizes.
+          </p>
+        </div>
 
         <div>
           <label htmlFor="description" className="mb-1.5 block text-sm font-medium text-ink">

@@ -86,7 +86,7 @@ export function CartDrawer() {
 
             <ul className="space-y-4">
                   {lines.map((line) =>
-              <li key={line.productId} className="flex gap-3">
+              <li key={`${line.productId}-${line.size ?? ''}`} className="flex gap-3">
                       <img
                   src={line.image}
                   alt={line.name}
@@ -96,6 +96,9 @@ export function CartDrawer() {
                         <p className="line-clamp-2 text-sm font-medium text-ink">
                           {line.name}
                         </p>
+                        {line.size &&
+                    <span className="text-xs text-ink-muted">Size: {line.size}</span>
+                    }
                         <span className="mt-1 text-sm font-semibold text-ink">
                           PKR {PKR.format(line.price)}
                         </span>
@@ -104,7 +107,7 @@ export function CartDrawer() {
                             <button
                         aria-label={`Decrease quantity of ${line.name}`}
                         onClick={() =>
-                        updateQty(line.productId, line.qty - 1)
+                        updateQty(line.productId, line.qty - 1, line.size)
                         }
                         disabled={line.qty <= 1}
                         className="flex h-7 w-7 items-center justify-center text-ink-muted hover:text-ink disabled:opacity-40">
@@ -117,7 +120,7 @@ export function CartDrawer() {
                             <button
                         aria-label={`Increase quantity of ${line.name}`}
                         onClick={() =>
-                        updateQty(line.productId, line.qty + 1)
+                        updateQty(line.productId, line.qty + 1, line.size)
                         }
                         className="flex h-7 w-7 items-center justify-center text-ink-muted hover:text-ink">
 
@@ -126,7 +129,7 @@ export function CartDrawer() {
                           </div>
                           <button
                       aria-label={`Remove ${line.name} from cart`}
-                      onClick={() => removeFromCart(line.productId)}
+                      onClick={() => removeFromCart(line.productId, line.size)}
                       className="flex h-7 w-7 items-center justify-center text-ink-muted hover:text-red-600">
 
                             <TrashIcon className="h-4 w-4" />

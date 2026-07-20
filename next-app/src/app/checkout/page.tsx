@@ -229,7 +229,8 @@ export default function Checkout() {
         name: l.name,
         image: l.image,
         price: l.price,
-        qty: l.qty
+        qty: l.qty,
+        size: l.size
       })),
       subtotal,
       discount,

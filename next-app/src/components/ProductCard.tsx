@@ -132,15 +132,26 @@ export function ProductCard({
           null}
         </div>
 
+        {product.sizes.length > 0 ?
+        <Link
+          href={`/product/${product.id}`}
+          aria-disabled={isOutOfStock}
+          className={`mt-3 flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${isOutOfStock ? 'pointer-events-none bg-gray-200 text-ink-muted' : 'bg-primary text-white hover:bg-primary-dark'}`}>
+
+            <ShoppingCartIcon className="h-4 w-4" />
+            {isOutOfStock ? 'Out of Stock' : 'Select Size'}
+          </Link> :
+
         <button
           type="button"
           disabled={isOutOfStock}
           onClick={() => addToCart(product)}
           className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-primary px-3 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-ink-muted">
 
-          <ShoppingCartIcon className="h-4 w-4" />
-          {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
-        </button>
+            <ShoppingCartIcon className="h-4 w-4" />
+            {isOutOfStock ? 'Out of Stock' : 'Add to Cart'}
+          </button>
+        }
       </div>
     </div>);
 

@@ -26,6 +26,7 @@ interface ProductRow {
   category: string;
   brand: string;
   images: string[];
+  sizes: string[];
   description: string;
   specs: string[];
   original_price: number;
@@ -49,6 +50,7 @@ function fromRow(row: ProductRow): Product {
     category: row.category,
     brand: row.brand,
     images: row.images,
+    sizes: row.sizes,
     description: row.description,
     specs: row.specs,
     originalPrice: row.original_price,
@@ -73,6 +75,7 @@ function toRow(product: Product): ProductRow {
     category: product.category,
     brand: product.brand,
     images: product.images,
+    sizes: product.sizes,
     description: product.description,
     specs: product.specs,
     original_price: product.originalPrice,

@@ -10,6 +10,7 @@ export const sampleProducts: Product[] = [
   'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&q=80',
   'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&q=80'],
 
+  sizes: [],
   description:
   'Premium over-ear headphones with active noise cancellation and 40-hour battery life.',
   specs: ['Bluetooth 5.3', '40hr battery', 'ANC', 'USB-C fast charge'],
@@ -35,6 +36,7 @@ export const sampleProducts: Product[] = [
   'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&q=80',
   'https://images.unsplash.com/photo-1508685096489-7aacd43bd3b1?w=600&q=80'],
 
+  sizes: [],
   description:
   'Track your workouts, sleep, and heart rate with this sleek smartwatch.',
   specs: ['AMOLED display', '7-day battery', 'Waterproof IP68'],
@@ -60,6 +62,7 @@ export const sampleProducts: Product[] = [
   'https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=600&q=80',
   'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=600&q=80'],
 
+  sizes: [],
   description:
   'Keeps drinks hot for 12 hours and cold for 24. Leak-proof lid.',
   specs: ['500ml capacity', 'Double-wall vacuum', 'BPA-free'],
@@ -85,6 +88,7 @@ export const sampleProducts: Product[] = [
   'https://images.unsplash.com/photo-1627123424574-724758594e93?w=600&q=80',
   'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80'],
 
+  sizes: [],
   description:
   'Genuine leather slim wallet with RFID protection, holds up to 8 cards.',
   specs: ['Genuine leather', 'RFID blocking', '8 card slots'],
@@ -110,6 +114,7 @@ export const sampleProducts: Product[] = [
   'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&q=80',
   'https://images.unsplash.com/photo-1545454675-3531b543be5d?w=600&q=80'],
 
+  sizes: [],
   description:
   '360° sound with deep bass, IPX7 waterproof rating, 12-hour playtime.',
   specs: ['IPX7 waterproof', '12hr playtime', 'TWS pairing'],
@@ -135,6 +140,7 @@ export const sampleProducts: Product[] = [
   'https://images.unsplash.com/photo-1584990347449-a5d9f800a783?w=600&q=80',
   'https://images.unsplash.com/photo-1590794056226-79ef3a8147e1?w=600&q=80'],
 
+  sizes: [],
   description: 'Durable ceramic-coated cookware set, oven safe up to 260°C.',
   specs: ['5-piece set', 'Ceramic coating', 'Oven safe 260°C'],
   originalPrice: 15999,
@@ -159,6 +165,7 @@ export const sampleProducts: Product[] = [
   'https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=600&q=80',
   'https://images.unsplash.com/photo-1591370874773-6702e8f12fd8?w=600&q=80'],
 
+  sizes: [],
   description:
   '7-in-1 USB-C hub with HDMI, USB 3.0, SD card reader and PD charging.',
   specs: ['HDMI 4K', '100W PD', 'SD/microSD reader'],
@@ -184,6 +191,7 @@ export const sampleProducts: Product[] = [
   'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=600&q=80',
   'https://images.unsplash.com/photo-1596205250210-32d569e5d0e6?w=600&q=80'],
 
+  sizes: [],
   description: 'Ultrasonic diffuser with 7-color LED and auto shut-off.',
   specs: ['300ml tank', '7-color LED', 'Auto shut-off'],
   originalPrice: 3200,

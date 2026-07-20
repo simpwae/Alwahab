@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { toast } from 'sonner';
 import { UserPlusIcon, MailIcon, PhoneIcon, UserIcon, LockIcon } from 'lucide-react';
 import { Header } from '../../components/layout/Header';
 import { TopUtilityBar } from '../../components/layout/TopUtilityBar';
@@ -11,10 +12,11 @@ import { CartDrawer } from '../../components/CartDrawer';
 import { Breadcrumb } from '../../components/listing/Breadcrumb';
 import { FormField } from '../../components/ui/FormField';
 import { Button } from '../../components/ui/Button';
+import { GoogleIcon } from '../../components/icons/GoogleIcon';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Signup() {
-  const { signup } = useAuth();
+  const { signup, signInWithGoogle } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -23,6 +25,16 @@ export default function Signup() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGoogleSubmitting, setIsGoogleSubmitting] = useState(false);
+
+  const handleGoogleSignIn = async () => {
+    setIsGoogleSubmitting(true);
+    const googleError = await signInWithGoogle();
+    if (googleError) {
+      setIsGoogleSubmitting(false);
+      toast.error(googleError);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -132,6 +144,24 @@ export default function Signup() {
             icon={<UserPlusIcon className="h-4 w-4" />}>
 
             {isSubmitting ? 'Creating Account…' : 'Create Account'}
+          </Button>
+
+          <div className="flex items-center gap-3">
+            <span className="h-px flex-1 bg-gray-200" />
+            <span className="text-xs text-ink-muted">or continue with</span>
+            <span className="h-px flex-1 bg-gray-200" />
+          </div>
+
+          <Button
+            type="button"
+            variant="secondary"
+            size="lg"
+            fullWidth
+            disabled={isGoogleSubmitting}
+            icon={<GoogleIcon />}
+            onClick={handleGoogleSignIn}>
+
+            {isGoogleSubmitting ? 'Redirecting…' : 'Continue with Google'}
           </Button>
 
           <p className="text-center text-sm text-ink-muted">

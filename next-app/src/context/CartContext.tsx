@@ -10,15 +10,16 @@ export interface CartLine {
   price: number;
   qty: number;
   stockQty: number;
+  size?: string;
 }
 interface CartContextValue {
   lines: CartLine[];
   isOpen: boolean;
   openCart: () => void;
   closeCart: () => void;
-  addToCart: (product: Product, qty?: number) => void;
-  removeFromCart: (productId: string) => void;
-  updateQty: (productId: string, qty: number) => void;
+  addToCart: (product: Product, qty?: number, size?: string) => void;
+  removeFromCart: (productId: string, size?: string) => void;
+  updateQty: (productId: string, qty: number, size?: string) => void;
   clearCart: () => void;
   subtotal: number;
   itemCount: number;
@@ -32,12 +33,12 @@ export function CartProvider({ children }: {children: ReactNode;}) {
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
-  const addToCart = (product: Product, qty: number = 1) => {
+  const addToCart = (product: Product, qty: number = 1, size?: string) => {
     setLines((prev) => {
-      const existing = prev.find((l) => l.productId === product.id);
+      const existing = prev.find((l) => l.productId === product.id && l.size === size);
       if (existing) {
         return prev.map((l) =>
-        l.productId === product.id ?
+        l.productId === product.id && l.size === size ?
         {
           ...l,
           qty: Math.min(l.qty + qty, product.stockQty || l.qty + qty)
@@ -53,7 +54,8 @@ export function CartProvider({ children }: {children: ReactNode;}) {
         image: product.images[0],
         price: product.sellingPrice,
         qty,
-        stockQty: product.stockQty
+        stockQty: product.stockQty,
+        size
       }];
 
     });
@@ -62,13 +64,13 @@ export function CartProvider({ children }: {children: ReactNode;}) {
     });
     setIsOpen(true);
   };
-  const removeFromCart = (productId: string) => {
-    setLines((prev) => prev.filter((l) => l.productId !== productId));
+  const removeFromCart = (productId: string, size?: string) => {
+    setLines((prev) => prev.filter((l) => !(l.productId === productId && l.size === size)));
   };
-  const updateQty = (productId: string, qty: number) => {
+  const updateQty = (productId: string, qty: number, size?: string) => {
     setLines((prev) =>
     prev.map((l) =>
-    l.productId === productId ?
+    l.productId === productId && l.size === size ?
     {
       ...l,
       qty: Math.max(1, Math.min(qty, l.stockQty || qty))
