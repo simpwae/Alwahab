@@ -96,11 +96,6 @@ export default function Login() {
             </Link>
           </p>
         </form>
-
-        <p className="mt-4 rounded-xl bg-surface p-3 text-xs text-ink-muted">
-          Demo accounts: ayesha.khan@example.com, bilal.ahmed@example.com,
-          sara.malik@example.com — password: Alwahab123!
-        </p>
       </main>
 
       <Footer />

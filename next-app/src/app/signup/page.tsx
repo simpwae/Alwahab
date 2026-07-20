@@ -39,7 +39,7 @@ export default function Signup() {
       return;
     }
     setIsSubmitting(true);
-    const signupError = await signup(name, email, phone, password);
+    const { error: signupError } = await signup(name, email, phone, password);
     setIsSubmitting(false);
     if (signupError) {
       setError(signupError);

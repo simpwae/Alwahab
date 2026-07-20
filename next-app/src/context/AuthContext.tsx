@@ -11,7 +11,7 @@ interface AuthContextValue {
   user: User | null;
   isInitialized: boolean;
   login: (email: string, password: string) => Promise<string | null>;
-  signup: (name: string, email: string, phone: string, password: string) => Promise<string | null>;
+  signup: (name: string, email: string, phone: string, password: string) => Promise<{ error: string | null; userId: string | null }>;
   logout: () => Promise<void>;
   updateUser: (patch: { name?: string; phone?: string }) => Promise<void>;
   changePassword: (newPassword: string) => Promise<string | null>;
@@ -84,9 +84,9 @@ export function AuthProvider({ children }: {children: ReactNode;}) {
       password,
       options: { data: { name, phone } }
     });
-    if (error) return error.message;
+    if (error) return { error: error.message, userId: null };
     await refreshFromSession(data.session);
-    return null;
+    return { error: null, userId: data.user?.id ?? null };
   };
 
   const logout = async () => {

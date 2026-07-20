@@ -85,6 +85,8 @@ interface PlaceOrderInput {
   paymentMethod: Order['paymentMethod'];
   paymentStatus: Order['paymentStatus'];
   receiptImage?: string;
+  /** Overrides the logged-in user id — for attributing an order to an account created during the same checkout. */
+  userId?: string;
 }
 
 interface CustomerOrdersValue {
@@ -133,7 +135,7 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
 
   const placeOrder = async (input: PlaceOrderInput) => {
     const { data, error } = await customerSupabase.rpc('place_order', {
-      p_user_id: user?.id ?? null,
+      p_user_id: input.userId ?? user?.id ?? null,
       p_customer: input.customer,
       p_email: input.email,
       p_phone: input.phone,

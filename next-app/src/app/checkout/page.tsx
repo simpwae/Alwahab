@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -26,6 +26,7 @@ import {
   CardFormValues } from
 '../../components/checkout/StripeCardForm';
 import { CheckoutOrderSummary } from '../../components/checkout/CheckoutOrderSummary';
+import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
 import { useOrders } from '../../context/OrderContext';
 import { useStoreSettings } from '../../context/StoreSettingsContext';
@@ -81,6 +82,7 @@ function validateCard(values: CardFormValues) {
 export default function Checkout() {
   const { lines, subtotal, clearCart, appliedCode } = useCart();
   const { placeOrder } = useOrders();
+  const { user, signup } = useAuth();
   const { settings } = useStoreSettings();
   const { coupons } = useCoupons();
   const router = useRouter();
@@ -91,6 +93,21 @@ export default function Checkout() {
     {});
   const [createAccount, setCreateAccount] = useState(false);
   const [password, setPassword] = useState('');
+  const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
+
+  // Prefill from the logged-in customer's profile + first saved address, without
+  // clobbering anything a guest already typed before signing in mid-checkout.
+  useEffect(() => {
+    if (!user) return;
+    const firstAddress = user.addresses[0];
+    setContact((prev) => ({
+      fullName: prev.fullName || user.name,
+      email: prev.email || user.email,
+      phone: prev.phone || user.phone,
+      address: prev.address || firstAddress?.line1 || '',
+      city: prev.city || firstAddress?.city || ''
+    }));
+  }, [user]);
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('COD');
   const [receiptFile, setReceiptFile] = useState<File | null>(null);
   const [receiptError, setReceiptError] = useState<string | undefined>(
@@ -169,8 +186,29 @@ export default function Checkout() {
       setCardErrors(cardValidation);
       if (Object.keys(cardValidation).length > 0) hasError = true;
     }
+    if (!user && createAccount && password.length < 8) {
+      setPasswordError('Password must be at least 8 characters.');
+      hasError = true;
+    } else {
+      setPasswordError(undefined);
+    }
     if (hasError) return;
     setIsSubmitting(true);
+    let newAccountUserId: string | undefined;
+    if (!user && createAccount) {
+      const { error: signupError, userId } = await signup(
+        contact.fullName,
+        contact.email,
+        contact.phone,
+        password
+      );
+      if (signupError) {
+        setIsSubmitting(false);
+        toast.error(signupError);
+        return;
+      }
+      newAccountUserId = userId ?? undefined;
+    }
     const paymentStatus =
     paymentMethod === 'Stripe' ?
     'Paid' :
@@ -199,7 +237,8 @@ export default function Checkout() {
       total,
       paymentMethod,
       paymentStatus,
-      receiptImage: receiptFile ? URL.createObjectURL(receiptFile) : undefined
+      receiptImage: receiptFile ? URL.createObjectURL(receiptFile) : undefined,
+      userId: newAccountUserId
     });
     setIsSubmitting(false);
     if (error || !order) {
@@ -328,28 +367,30 @@ export default function Checkout() {
 
               </div>
 
+              {!user &&
               <div className="mt-5 flex items-center justify-between rounded-xl bg-surface px-4 py-3">
-                <div>
-                  <p className="text-sm font-medium text-ink">
-                    Create an account
-                  </p>
-                  <p className="text-xs text-ink-muted">
-                    Save your details for faster checkout next time. Optional.
-                  </p>
-                </div>
-                <label className="relative inline-flex shrink-0 cursor-pointer items-center">
-                  <input
+                  <div>
+                    <p className="text-sm font-medium text-ink">
+                      Create an account
+                    </p>
+                    <p className="text-xs text-ink-muted">
+                      Save your details for faster checkout next time. Optional.
+                    </p>
+                  </div>
+                  <label className="relative inline-flex shrink-0 cursor-pointer items-center">
+                    <input
                     type="checkbox"
                     checked={createAccount}
                     onChange={() => setCreateAccount((v) => !v)}
                     className="peer sr-only" />
 
-                  <span className="h-6 w-11 rounded-full bg-gray-300 transition-colors peer-checked:bg-primary" />
-                  <span className="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-5" />
-                </label>
-              </div>
+                    <span className="h-6 w-11 rounded-full bg-gray-300 transition-colors peer-checked:bg-primary" />
+                    <span className="absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform peer-checked:translate-x-5" />
+                  </label>
+                </div>
+              }
 
-              {createAccount &&
+              {!user && createAccount &&
               <div className="mt-3">
                   <FormField
                   label="Create Password"
@@ -358,7 +399,8 @@ export default function Checkout() {
                   placeholder="At least 8 characters"
                   leadingIcon={<LockIcon className="h-4 w-4" />}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)} />
+                  onChange={(e) => setPassword(e.target.value)}
+                  error={passwordError} />
 
                 </div>
               }
