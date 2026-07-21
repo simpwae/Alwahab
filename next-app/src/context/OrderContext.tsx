@@ -1,10 +1,16 @@
 "use client";
 
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
+import { toast } from 'sonner';
 import { Order, OrderItem } from '../types';
 import { createClient } from '../lib/supabase/client';
 import { useAuth } from './AuthContext';
 import { useAdminAuth } from './AdminAuthContext';
+
+const RATE_LIMIT_MESSAGE = 'Too many attempts. Please wait a few minutes and try again.';
+function friendlyError(message: string) {
+  return message.includes('rate_limit_exceeded') ? RATE_LIMIT_MESSAGE : message;
+}
 
 // orders/order_items RLS only allows a row's owner or an admin to SELECT it
 // (orders_select_own_or_admin), and only an admin to UPDATE it
@@ -153,7 +159,7 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
         product_id: i.productId, name: i.name, image: i.image, price: i.price, qty: i.qty, size: i.size ?? null
       }))
     });
-    if (error) return { order: null, error: error.message };
+    if (error) return { order: null, error: friendlyError(error.message) };
     const row = data as OrderRow;
     const order: Order = {
       id: row.id,
@@ -179,11 +185,15 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
   };
 
   const findOrder = async (orderId: string, email: string): Promise<Order | undefined> => {
-    const [{ data: orderRows, error }, { data: itemRows }] = await Promise.all([
+    const [{ data: orderRows, error: orderError }, { data: itemRows, error: itemsError }] = await Promise.all([
     customerSupabase.rpc('find_guest_order', { p_order_id: orderId, p_email: email }),
     customerSupabase.rpc('find_guest_order_items', { p_order_id: orderId, p_email: email })]
     );
-    if (error || !orderRows || orderRows.length === 0) return undefined;
+    if (orderError || itemsError) {
+      toast.error(friendlyError((orderError ?? itemsError)!.message));
+      return undefined;
+    }
+    if (!orderRows || orderRows.length === 0) return undefined;
     return fromRow({ ...(orderRows[0] as OrderRow), order_items: (itemRows ?? []) as OrderItemRow[] });
   };
 
