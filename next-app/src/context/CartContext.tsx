@@ -46,13 +46,14 @@ export function CartProvider({ children }: {children: ReactNode;}) {
         l
         );
       }
+      const price = product.sizes.find((s) => s.label === size)?.price ?? product.sellingPrice;
       return [
       ...prev,
       {
         productId: product.id,
         name: product.name,
         image: product.images[0],
-        price: product.sellingPrice,
+        price,
         qty,
         stockQty: product.stockQty,
         size

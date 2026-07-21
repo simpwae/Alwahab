@@ -10,7 +10,7 @@ import { FormField } from '../components/ui/FormField';
 import { Button } from '../components/ui/Button';
 import { EmptyState } from '../components/states/EmptyState';
 import { useProducts } from '../context/ProductContext';
-import { Product, ProductStatus } from '../types';
+import { Product, ProductSize, ProductStatus } from '../types';
 import { CATEGORIES } from '../data/categories';
 
 const STATUSES: ProductStatus[] = ['Active', 'Draft', 'OutOfStock'];
@@ -35,7 +35,7 @@ interface FormValues {
   category: string;
   brand: string;
   images: string[];
-  sizes: string[];
+  sizes: ProductSize[];
   description: string;
   sku: string;
   originalPrice: string;
@@ -94,7 +94,8 @@ function AdminProductForm() {
     {}
   );
   const [uploading, setUploading] = useState(false);
-  const [sizeInput, setSizeInput] = useState('');
+  const [sizeLabel, setSizeLabel] = useState('');
+  const [sizePrice, setSizePrice] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // products arrives from an async context fetch, which may still be in
@@ -137,17 +138,20 @@ function AdminProductForm() {
   };
 
   const addSize = () => {
-    const size = sizeInput.trim();
-    if (!size || values.sizes.includes(size)) {
-      setSizeInput('');
+    const label = sizeLabel.trim();
+    if (!label || values.sizes.some((s) => s.label === label)) {
+      setSizeLabel('');
+      setSizePrice('');
       return;
     }
-    setValues((prev) => ({ ...prev, sizes: [...prev.sizes, size] }));
-    setSizeInput('');
+    const price = sizePrice.trim() ? Number(sizePrice) : Number(values.sellingPrice) || 0;
+    setValues((prev) => ({ ...prev, sizes: [...prev.sizes, { label, price }] }));
+    setSizeLabel('');
+    setSizePrice('');
   };
 
-  const removeSize = (size: string) => {
-    setValues((prev) => ({ ...prev, sizes: prev.sizes.filter((s) => s !== size) }));
+  const removeSize = (label: string) => {
+    setValues((prev) => ({ ...prev, sizes: prev.sizes.filter((s) => s.label !== label) }));
   };
 
   const validate = (): boolean => {
@@ -318,37 +322,54 @@ function AdminProductForm() {
           <div className="flex flex-wrap items-center gap-2">
             {values.sizes.map((size) =>
             <span
-              key={size}
+              key={size.label}
               className="flex items-center gap-1.5 rounded-full bg-surface px-3 py-1 text-sm font-medium text-ink">
 
-                {size}
+                {size.label} · PKR {size.price}
                 <button
                 type="button"
-                aria-label={`Remove size ${size}`}
-                onClick={() => removeSize(size)}
+                aria-label={`Remove size ${size.label}`}
+                onClick={() => removeSize(size.label)}
                 className="text-ink-muted hover:text-red-600">
 
                   <XIcon className="h-3.5 w-3.5" />
                 </button>
               </span>
             )}
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
             <input
               type="text"
-              value={sizeInput}
-              onChange={(e) => setSizeInput(e.target.value)}
+              value={sizeLabel}
+              onChange={(e) => setSizeLabel(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === 'Enter' || e.key === ',') {
+                if (e.key === 'Enter') {
                   e.preventDefault();
                   addSize();
                 }
               }}
-              onBlur={addSize}
-              placeholder="e.g. S, M, L or 150cm — press Enter"
-              className="min-w-[10rem] flex-1 rounded-xl border border-gray-300 bg-white px-3.5 py-1.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+              placeholder="e.g. S, M, L or 150cm"
+              className="w-40 rounded-xl border border-gray-300 bg-white px-3.5 py-1.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
 
+            <input
+              type="number"
+              value={sizePrice}
+              onChange={(e) => setSizePrice(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addSize();
+                }
+              }}
+              placeholder={`Price (default ${values.sellingPrice || 0})`}
+              className="w-44 rounded-xl border border-gray-300 bg-white px-3.5 py-1.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+
+            <Button type="button" size="sm" variant="secondary" onClick={addSize}>
+              Add Size
+            </Button>
           </div>
           <p className="mt-1.5 text-xs text-ink-muted">
-            Leave empty if this product doesn&apos;t come in sizes.
+            Leave empty if this product doesn&apos;t come in sizes. Each size can have its own price (e.g. a larger size costing more) — leave price blank to use the Selling Price above.
           </p>
         </div>
 

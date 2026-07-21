@@ -1,13 +1,18 @@
 export type ProductRibbon = 'New' | 'BestSeller' | 'none';
 export type ProductStatus = 'Active' | 'Draft' | 'OutOfStock';
 
+export interface ProductSize {
+  label: string;
+  price: number;
+}
+
 export interface Product {
   id: string;
   name: string;
   category: string;
   brand: string;
   images: string[];
-  sizes: string[];
+  sizes: ProductSize[];
   description: string;
   specs: string[];
   originalPrice: number;

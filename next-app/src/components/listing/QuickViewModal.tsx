@@ -30,6 +30,10 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
   product.status === 'OutOfStock' || product.stockQty === 0 :
   false;
   const sizeRequired = !!product && product.sizes.length > 0 && !selectedSize;
+  const displayedPrice = product ?
+  selectedSize ? product.sizes.find((s) => s.label === selectedSize)?.price ?? product.sellingPrice : product.sellingPrice :
+  0;
+  const hasDiscount = !!product && product.originalPrice > displayedPrice;
   const handleClose = () => {
     setQty(1);
     setActiveImage(0);
@@ -137,9 +141,9 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
 
                 <div className="mt-3 flex items-baseline gap-2">
                   <span className="font-display text-2xl font-bold text-ink">
-                    PKR {PKR.format(product.sellingPrice)}
+                    PKR {PKR.format(displayedPrice)}
                   </span>
-                  {product.discountPct > 0 &&
+                  {hasDiscount &&
                 <span className="text-sm text-ink-muted line-through">
                       PKR {PKR.format(product.originalPrice)}
                     </span>
@@ -168,12 +172,12 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                     <div className="mt-2 flex flex-wrap gap-2">
                       {product.sizes.map((size) =>
                   <button
-                    key={size}
+                    key={size.label}
                     type="button"
-                    onClick={() => setSelectedSize(size)}
-                    className={`rounded-xl border px-3 py-1.5 text-sm font-medium transition-colors ${selectedSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-gray-300 text-ink hover:border-primary'}`}>
+                    onClick={() => setSelectedSize(size.label)}
+                    className={`rounded-xl border px-3 py-1.5 text-sm font-medium transition-colors ${selectedSize === size.label ? 'border-primary bg-primary/10 text-primary' : 'border-gray-300 text-ink hover:border-primary'}`}>
 
-                          {size}
+                          {size.label}
                         </button>
                   )}
                     </div>

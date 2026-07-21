@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, createContext, useContext, ReactNode } from 'react';
-import { Product } from '../types';
+import { Product, ProductSize } from '../types';
 import { createClient } from '../lib/supabase/client';
 
 // Reads are public (products_select_public); writes require an authenticated
@@ -26,7 +26,7 @@ interface ProductRow {
   category: string;
   brand: string;
   images: string[];
-  sizes: string[];
+  sizes: ProductSize[];
   description: string;
   specs: string[];
   original_price: number;

@@ -81,7 +81,14 @@ export default function ProductDetail() {
   const sizeRequired = product.sizes.length > 0 && !selectedSize;
   const isLowStock =
   !isOutOfStock && product.stockQty <= product.lowStockThreshold;
-  const savings = product.originalPrice - product.sellingPrice;
+  const displayedPrice = selectedSize ?
+  product.sizes.find((s) => s.label === selectedSize)?.price ?? product.sellingPrice :
+  product.sellingPrice;
+  const hasDiscount = product.originalPrice > displayedPrice;
+  const discountPct = hasDiscount ?
+  Math.round((product.originalPrice - displayedPrice) / product.originalPrice * 100) :
+  0;
+  const savings = product.originalPrice - displayedPrice;
   return (
     <div className="min-h-full w-full bg-white">
       <TopUtilityBar />
@@ -134,22 +141,22 @@ export default function ProductDetail() {
             <div className="mt-5 rounded-2xl bg-surface p-4">
               <div className="flex flex-wrap items-baseline gap-3">
                 <span className="font-display text-3xl font-extrabold text-ink">
-                  PKR {PKR.format(product.sellingPrice)}
+                  PKR {PKR.format(displayedPrice)}
                 </span>
-                {product.discountPct > 0 &&
+                {hasDiscount &&
                 <span className="text-base text-ink-muted line-through">
                     PKR {PKR.format(product.originalPrice)}
                   </span>
                 }
-                {product.discountPct > 0 &&
+                {hasDiscount &&
                 <span className="rounded-full bg-accent px-2 py-0.5 text-xs font-bold text-white">
-                    -{product.discountPct}%
+                    -{discountPct}%
                   </span>
                 }
               </div>
-              {product.discountPct > 0 &&
+              {hasDiscount &&
               <p className="mt-1 text-sm font-medium text-primary">
-                  You save PKR {PKR.format(savings)} ({product.discountPct}%)
+                  You save PKR {PKR.format(savings)} ({discountPct}%)
                 </p>
               }
               <div className="mt-2 flex flex-wrap items-center gap-3">
@@ -176,12 +183,17 @@ export default function ProductDetail() {
                 <div className="mt-2 flex flex-wrap gap-2">
                   {product.sizes.map((size) =>
                 <button
-                  key={size}
+                  key={size.label}
                   type="button"
-                  onClick={() => setSelectedSize(size)}
-                  className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${selectedSize === size ? 'border-primary bg-primary/10 text-primary' : 'border-gray-300 text-ink hover:border-primary'}`}>
+                  onClick={() => setSelectedSize(size.label)}
+                  className={`rounded-xl border px-3.5 py-2 text-sm font-medium transition-colors ${selectedSize === size.label ? 'border-primary bg-primary/10 text-primary' : 'border-gray-300 text-ink hover:border-primary'}`}>
 
-                      {size}
+                      {size.label}
+                      {size.price !== product.sellingPrice &&
+                    <span className="ml-1 text-xs text-ink-muted">
+                          (PKR {PKR.format(size.price)})
+                        </span>
+                    }
                     </button>
                 )}
                 </div>
