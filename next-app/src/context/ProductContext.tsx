@@ -11,6 +11,7 @@ const supabase = createClient('alwahab-admin-auth');
 
 interface ProductContextValue {
   products: Product[];
+  isLoading: boolean;
   addProduct: (product: Product) => Promise<string | null>;
   updateProduct: (id: string, patch: Partial<Product>) => Promise<string | null>;
   deleteProduct: (id: string) => Promise<string | null>;
@@ -95,10 +96,12 @@ function toRow(product: Product): ProductRow {
 
 export function ProductProvider({ children }: {children: ReactNode;}) {
   const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     supabase.from('products').select('*').then(({ data }) => {
       setProducts((data ?? []).map((row) => fromRow(row as ProductRow)));
+      setIsLoading(false);
     });
   }, []);
 
@@ -166,7 +169,7 @@ export function ProductProvider({ children }: {children: ReactNode;}) {
 
   return (
     <ProductContext.Provider
-      value={{ products, addProduct, updateProduct, deleteProduct, deleteProducts, applyDiscount }}>
+      value={{ products, isLoading, addProduct, updateProduct, deleteProduct, deleteProducts, applyDiscount }}>
       {children}
     </ProductContext.Provider>);
 

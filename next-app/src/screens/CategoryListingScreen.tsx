@@ -66,7 +66,7 @@ export function CategoryListingScreen() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  const { products } = useProducts();
+  const { products, isLoading: productsLoading } = useProducts();
   const isDeals = slug === 'deals';
   const categoryName =
   slug && !isDeals && slug !== 'all' ? slugToCategory(slug) : null;
@@ -98,6 +98,7 @@ export function CategoryListingScreen() {
   const sorted = useMemo(() => applySort(filtered, sort), [filtered, sort]);
   const visible = sorted.slice(0, page * PAGE_SIZE);
   const hasMore = visible.length < sorted.length;
+  const isLoading = status === 'loading' || productsLoading;
   const pageTitle = isDeals ? 'Deals' : categoryName ?? 'All Products';
   const seo = CATEGORY_SEO[slug ?? 'default'] ?? CATEGORY_SEO.default;
   const handleSortChange = (next: SortOption) => {
@@ -150,7 +151,7 @@ export function CategoryListingScreen() {
           <div className="min-w-0 flex-1">
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
               <p className="text-sm text-ink-muted">
-                {status === 'idle' ?
+                {!isLoading ?
                 <>
                     <span className="font-medium text-ink">
                       {sorted.length}
@@ -181,7 +182,7 @@ export function CategoryListingScreen() {
             <ProductGrid
               products={visible}
               status={
-              status === 'loading' ?
+              isLoading ?
               'loading' :
               sorted.length === 0 ?
               'empty' :
@@ -195,7 +196,7 @@ export function CategoryListingScreen() {
               }} />
 
 
-            {status === 'idle' && hasMore &&
+            {!isLoading && hasMore &&
             <div className="mt-8 flex justify-center">
                 <Button
                 variant="secondary"

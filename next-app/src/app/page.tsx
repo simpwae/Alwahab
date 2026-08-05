@@ -15,7 +15,7 @@ import { PromoBand } from '../components/home/PromoBand';
 import { WhyAlwahab } from '../components/home/WhyAlwahab';
 import { useProducts } from '../context/ProductContext';
 export default function Home() {
-  const { products } = useProducts();
+  const { products, isLoading } = useProducts();
   const flashDealProducts = products.filter(
     (p) => p.discountPct >= 20 && p.status === 'Active'
   );
@@ -35,20 +35,22 @@ export default function Home() {
       <main className="mx-auto flex max-w-7xl flex-col gap-12 px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:gap-16">
         <HeroCarousel />
         <CategoryTiles />
-        <FlashDeals products={flashDealProducts} />
+        <FlashDeals products={flashDealProducts} status={isLoading ? 'loading' : 'idle'} />
         <ProductSection
           title="Best Sellers"
           subtitle="Loved by thousands of Alwahab customers"
           icon={<TrophyIcon className="h-5 w-5" />}
           viewAllHref="/category/all?sort=best-selling"
-          products={bestSellers} />
+          products={bestSellers}
+          status={isLoading ? 'loading' : 'idle'} />
 
         <ProductSection
           title="New Arrivals"
           subtitle="Fresh finds, just added to the store"
           icon={<SparklesIcon className="h-5 w-5" />}
           viewAllHref="/category/all?sort=new"
-          products={newArrivals} />
+          products={newArrivals}
+          status={isLoading ? 'loading' : 'idle'} />
 
         <PromoBand />
         <WhyAlwahab />

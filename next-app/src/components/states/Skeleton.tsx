@@ -26,6 +26,36 @@ export function ProductCardSkeleton() {
     </div>);
 
 }
+export function ProductDetailSkeleton() {
+  return (
+    <div
+      className="grid grid-cols-1 gap-10 lg:grid-cols-2"
+      role="status"
+      aria-label="Loading product">
+
+      <div>
+        <Skeleton className="aspect-square w-full rounded-2xl" />
+        <div className="mt-3 flex gap-2">
+          {Array.from({ length: 4 }).map((_, i) =>
+          <Skeleton key={i} className="h-16 w-16 shrink-0 rounded-xl" />
+          )}
+        </div>
+      </div>
+      <div>
+        <Skeleton className="h-3 w-1/3" />
+        <Skeleton className="mt-2.5 h-7 w-3/4" />
+        <Skeleton className="mt-3 h-4 w-1/3" />
+        <Skeleton className="mt-5 h-24 w-full rounded-2xl" />
+        <Skeleton className="mt-5 h-9 w-1/2 rounded-xl" />
+        <div className="mt-5 flex gap-3">
+          <Skeleton className="h-12 w-full rounded-xl" />
+          <Skeleton className="h-12 w-full rounded-xl" />
+        </div>
+      </div>
+      <span className="sr-only">Loading product…</span>
+    </div>);
+
+}
 export function ProductGridSkeleton({ count = 8 }: {count?: number;}) {
   return (
     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">

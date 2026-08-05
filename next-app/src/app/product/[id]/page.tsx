@@ -25,6 +25,7 @@ import { ImageGallery } from '../../../components/product/ImageGallery';
 import { ProductTabs } from '../../../components/product/ProductTabs';
 import { RelatedProducts } from '../../../components/product/RelatedProducts';
 import { EmptyState } from '../../../components/states/EmptyState';
+import { ProductDetailSkeleton } from '../../../components/states/Skeleton';
 import { useCart } from '../../../context/CartContext';
 import { useProducts } from '../../../context/ProductContext';
 import { useReviews } from '../../../context/ReviewContext';
@@ -35,7 +36,7 @@ const PKR = new Intl.NumberFormat('en-PK', {
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
   const { addToCart } = useCart();
-  const { products } = useProducts();
+  const { products, isLoading } = useProducts();
   const { reviews: allReviews } = useReviews();
   const [qty, setQty] = useState(1);
   const [selectedSize, setSelectedSize] = useState<string | undefined>(undefined);
@@ -56,6 +57,19 @@ export default function ProductDetail() {
   }, [product, products]);
   // Mock gating: in a real app this would check the user's order history for a delivered order of this product.
   const hasPurchased = false;
+  if (isLoading) {
+    return (
+      <div className="min-h-full w-full bg-white">
+        <TopUtilityBar />
+        <Header />
+        <CartDrawer />
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+          <ProductDetailSkeleton />
+        </main>
+        <Footer />
+      </div>);
+
+  }
   if (!product) {
     return (
       <div className="min-h-full w-full bg-white">

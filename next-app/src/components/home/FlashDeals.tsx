@@ -4,9 +4,11 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FlameIcon, ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { Product } from '../../types';
 import { ProductCard } from '../ProductCard';
+import { ProductCardSkeleton } from '../states/Skeleton';
 import { useWishlist } from '../../context/WishlistContext';
 interface FlashDealsProps {
   products: Product[];
+  status?: 'idle' | 'loading';
 }
 function getEndOfDeal(): number {
   const now = new Date();
@@ -45,7 +47,7 @@ function TimeBlock({ value, label }: {value: number;label: string;}) {
     </div>);
 
 }
-export function FlashDeals({ products }: FlashDealsProps) {
+export function FlashDeals({ products, status = 'idle' }: FlashDealsProps) {
   const [targetTime, setTargetTime] = useState<number | null>(null);
   useEffect(() => {
     setTargetTime(getEndOfDeal());
@@ -113,7 +115,13 @@ export function FlashDeals({ products }: FlashDealsProps) {
         ref={scrollRef}
         className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-        {products.map((product) =>
+        {status === 'loading' ?
+        Array.from({ length: 4 }).map((_, i) =>
+        <div key={i} className="w-[46%] shrink-0 snap-start sm:w-[30%] lg:w-[23%]">
+            <ProductCardSkeleton />
+          </div>
+        ) :
+        products.map((product) =>
         <div
           key={product.id}
           className="w-[46%] shrink-0 snap-start sm:w-[30%] lg:w-[23%]">

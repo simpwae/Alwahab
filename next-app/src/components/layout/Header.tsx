@@ -115,7 +115,8 @@ export function Header() {
     router
   } = useSearchBox();
   return (
-    <header className="sticky top-0 z-30 w-full border-b border-gray-100 bg-white/95 backdrop-blur">
+    <header className="sticky top-0 z-30 w-full">
+      <div className="border-b border-gray-100 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-3 sm:px-6 lg:px-8">
         <button
           type="button"
@@ -346,6 +347,7 @@ export function Header() {
           </Link>
         </div>
       </div>
+      </div>
 
       {/* Mobile menu drawer */}
       <AnimatePresence>
@@ -368,7 +370,7 @@ export function Header() {
             role="dialog"
             aria-modal="true"
             aria-label="Mobile menu"
-            className="fixed left-0 top-0 z-50 h-full w-72 bg-white p-5 shadow-2xl lg:hidden"
+            className="fixed left-0 top-0 z-50 flex h-full w-72 flex-col bg-white p-5 shadow-2xl lg:hidden"
             initial={{
               x: '-100%'
             }}
@@ -384,38 +386,50 @@ export function Header() {
               damping: 34
             }}>
 
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between pb-4 border-b border-gray-100">
                 <Logo />
                 <button
                 aria-label="Close menu"
                 onClick={() => setMobileMenuOpen(false)}
-                className="flex h-9 w-9 items-center justify-center rounded-full hover:bg-gray-100">
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-surface text-ink transition-colors hover:bg-gray-200">
 
                   <XIcon className="h-5 w-5" />
                 </button>
               </div>
-              <nav className="mt-6 flex flex-col gap-1">
-                {[
-              {
-                label: 'All Categories',
-                href: '/category/all'
-              },
-              ...CATEGORY_LINKS,
-              {
-                label: 'Deals 🔥',
-                href: '/deals'
-              }].
-              map((link) =>
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="rounded-xl px-3 py-2.5 text-sm font-medium text-ink hover:bg-surface">
+              <div className="mt-6 flex-1 overflow-y-auto">
+                <nav className="flex flex-col gap-2">
+                  {[
+                {
+                  label: 'All Categories',
+                  href: '/category/all'
+                },
+                ...CATEGORY_LINKS,
+                {
+                  label: 'Deals 🔥',
+                  href: '/deals'
+                }].
+                map((link) =>
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="rounded-xl px-4 py-3 text-base font-medium text-ink transition-all hover:bg-primary-50 hover:text-primary hover:translate-x-1">
 
-                    {link.label}
-                  </Link>
-              )}
-              </nav>
+                      {link.label}
+                    </Link>
+                )}
+                </nav>
+              </div>
+              
+              <div className="mt-auto border-t border-gray-100 pt-5">
+                <Link
+                  href={user ? '/account' : '/login'}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-primary-dark">
+                  <UserIcon className="h-4 w-4" />
+                  {user ? 'My Account' : 'Login / Sign Up'}
+                </Link>
+              </div>
             </motion.div>
           </>
         }
