@@ -19,16 +19,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid signature.' }, { status: 400 });
   }
 
-  // Logged deliberately: Safepay's docs don't pin down the exact field name/value
-  // for a completed payment, so this is here to confirm it against a real sandbox
-  // event rather than guessing blind.
-  console.log('Safepay webhook payload', JSON.stringify(body));
-
-  const data = body?.data ?? {};
-  const orderId: string | undefined = data.order_id ?? data.metadata?.order_id;
-  const tracker: string | undefined = data.tracker;
-  const state: string = String(data.state ?? data.status ?? '').toUpperCase();
-  const isPaid = state.includes('PAID') || state.includes('COMPLETE') || state.includes('SUCCESS');
+  // Confirmed shape from a real sandbox `payment:created` event - the useful
+  // fields sit under data.notification, not directly under data.
+  const notification = body?.data?.notification ?? {};
+  const orderId: string | undefined = notification.metadata?.order_id;
+  const tracker: string | undefined = notification.tracker;
+  const state: string = String(notification.state ?? '').toUpperCase();
+  const isPaid = state === 'PAID';
 
   if (!isPaid) {
     return NextResponse.json({ received: true });
