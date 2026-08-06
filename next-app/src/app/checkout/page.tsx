@@ -219,6 +219,12 @@ export default function Checkout() {
       toast.error(error ?? 'Could not place order. Please try again.');
       return;
     }
+    fetch('/api/orders/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orderId: order.id }),
+      keepalive: true
+    }).catch(() => {});
     if (paymentMethod === 'Safepay') {
       try {
         const res = await fetch('/api/safepay/checkout', {
