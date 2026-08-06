@@ -198,8 +198,8 @@ export function Footer() {
             <span className="rounded-md border border-gray-200 bg-white px-2 py-1 font-semibold text-[#EB001B]">
               Mastercard
             </span>
-            <span className="rounded-md border border-gray-200 bg-white px-2 py-1 font-semibold text-[#635BFF]">
-              Stripe
+            <span className="rounded-md border border-gray-200 bg-white px-2 py-1 font-semibold text-primary">
+              Safepay
             </span>
           </div>
         </div>

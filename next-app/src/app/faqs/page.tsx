@@ -12,7 +12,7 @@ export const metadata = {
 const FAQS = [
   {
     q: 'What payment methods do you accept?',
-    a: 'Cash on Delivery (COD) and card payment (Visa, Mastercard) via Stripe.',
+    a: 'Cash on Delivery (COD) and card payment (Visa, Mastercard) via Safepay.',
   },
   {
     q: 'How long does delivery take?',

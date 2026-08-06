@@ -29,7 +29,7 @@ export interface Product {
   featured: boolean;
 }
 
-export type PaymentMethod = 'COD' | 'BankTransfer' | 'Stripe';
+export type PaymentMethod = 'COD' | 'BankTransfer' | 'Safepay';
 export type PaymentStatus =
 'Paid' |
 'AwaitingVerification' |
@@ -72,6 +72,7 @@ export interface Order {
   fulfillmentStatus: FulfillmentStatus;
   receiptImage?: string;
   trackingNumber?: string;
+  paymentReference?: string;
 }
 
 export interface Address {

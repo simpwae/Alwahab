@@ -29,9 +29,9 @@ const OPTIONS: PaymentOption[] = [
   icon: <BuildingIcon className="h-5 w-5" />
 },
 {
-  id: 'Stripe',
+  id: 'Safepay',
   label: 'Credit / Debit Card',
-  description: 'Pay securely online with Stripe.',
+  description: 'Pay securely online via Safepay.',
   icon: <CreditCardIcon className="h-5 w-5" />
 }];
 

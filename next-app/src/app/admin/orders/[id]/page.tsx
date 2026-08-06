@@ -12,6 +12,7 @@ import { FormField } from '../../../../components/ui/FormField';
 import { Button } from '../../../../components/ui/Button';
 import { useAdminOrders } from '../../../../context/OrderContext';
 import { FulfillmentStatus, PaymentStatus } from '../../../../types';
+import { ImageIcon } from 'lucide-react';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
 const FULFILLMENT_OPTIONS: FulfillmentStatus[] = [
@@ -76,6 +77,15 @@ function AdminOrderDetail() {
     else toast.success('Order updated');
   };
 
+  const handleVerifyBankTransfer = async () => {
+    const error = await updateOrder(order.id, { paymentStatus: 'Paid' });
+    if (error) toast.error(error);
+    else {
+      setPaymentStatus('Paid');
+      toast.success('Payment verified');
+    }
+  };
+
   return (
     <AdminLayout title={`Order #${order.id}`}>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
@@ -100,6 +110,24 @@ function AdminOrderDetail() {
               variant={PAYMENT_STATUS_VARIANT[order.paymentStatus]} />
 
           </div>
+          {order.paymentMethod === 'BankTransfer' && order.receiptImage &&
+          <div className="flex flex-wrap items-center gap-4 border-b border-gray-100 p-5">
+              <a
+              href={order.receiptImage}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 rounded-xl border border-gray-200 px-3.5 py-2.5 text-sm font-medium text-primary hover:border-primary">
+
+                <ImageIcon className="h-4 w-4" />
+                View Payment Receipt
+              </a>
+              {order.paymentStatus !== 'Paid' &&
+              <Button variant="secondary" onClick={handleVerifyBankTransfer}>
+                  Mark as Paid
+                </Button>
+              }
+            </div>
+          }
           <ul className="divide-y divide-gray-100">
             {order.items.map((item) =>
             <li key={`${item.productId}-${item.size ?? ''}`} className="flex items-center gap-3 p-4 sm:p-5">

@@ -21,10 +21,6 @@ import { FormField } from '../../components/ui/FormField';
 import { EmptyState } from '../../components/states/EmptyState';
 import { PaymentMethodSelector } from '../../components/checkout/PaymentMethodSelector';
 import { BankTransferPanel } from '../../components/checkout/BankTransferPanel';
-import {
-  StripeCardForm,
-  CardFormValues } from
-'../../components/checkout/StripeCardForm';
 import { CheckoutOrderSummary } from '../../components/checkout/CheckoutOrderSummary';
 import { useAuth } from '../../context/AuthContext';
 import { useCart } from '../../context/CartContext';
@@ -32,6 +28,7 @@ import { useOrders } from '../../context/OrderContext';
 import { useStoreSettings } from '../../context/StoreSettingsContext';
 import { useCoupons } from '../../context/CouponContext';
 import { findValidCoupon, calculateDiscount } from '../../data/sampleCoupons';
+import { uploadToCloudinary } from '../../lib/cloudinary';
 import { PaymentMethod } from '../../types';
 export interface ContactShippingValues {
   fullName: string;
@@ -65,18 +62,6 @@ export function validateContact(values: ContactShippingValues): ContactShippingE
   }
   if (!values.address.trim()) errors.address = 'Street address is required.';
   if (!values.city.trim()) errors.city = 'City is required.';
-  return errors;
-}
-function validateCard(values: CardFormValues) {
-  const errors: Partial<Record<keyof CardFormValues, string>> = {};
-  const digits = values.cardNumber.replace(/\s/g, '');
-  if (digits.length !== 16)
-  errors.cardNumber = 'Enter a valid 16-digit card number.';
-  if (!values.cardName.trim()) errors.cardName = 'Name on card is required.';
-  if (!/^\d{2}\/\d{2}$/.test(values.expiry)) {
-    errors.expiry = 'Enter expiry as MM/YY.';
-  }
-  if (values.cvc.length < 3) errors.cvc = 'Enter a valid CVC.';
   return errors;
 }
 export default function Checkout() {
@@ -113,15 +98,6 @@ export default function Checkout() {
   const [receiptError, setReceiptError] = useState<string | undefined>(
     undefined
   );
-  const [cardValues, setCardValues] = useState<CardFormValues>({
-    cardNumber: '',
-    cardName: '',
-    expiry: '',
-    cvc: ''
-  });
-  const [cardErrors, setCardErrors] = useState<
-    Partial<Record<keyof CardFormValues, string>>>(
-    {});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const discount = appliedCode ?
   calculateDiscount(
@@ -158,12 +134,6 @@ export default function Checkout() {
     }));
     setContactErrors(validateContact(contact));
   };
-  const handleCardChange = (field: keyof CardFormValues, value: string) => {
-    setCardValues((prev) => ({
-      ...prev,
-      [field]: value
-    }));
-  };
   const handlePlaceOrder = async () => {
     const contactValidation = validateContact(contact);
     setContactErrors(contactValidation);
@@ -180,11 +150,6 @@ export default function Checkout() {
       hasError = true;
     } else {
       setReceiptError(undefined);
-    }
-    if (paymentMethod === 'Stripe') {
-      const cardValidation = validateCard(cardValues);
-      setCardErrors(cardValidation);
-      if (Object.keys(cardValidation).length > 0) hasError = true;
     }
     if (!user && createAccount && password.length < 8) {
       setPasswordError('Password must be at least 8 characters.');
@@ -209,9 +174,17 @@ export default function Checkout() {
       }
       newAccountUserId = userId ?? undefined;
     }
+    let receiptImage: string | undefined;
+    if (paymentMethod === 'BankTransfer' && receiptFile) {
+      try {
+        receiptImage = await uploadToCloudinary(receiptFile);
+      } catch (err) {
+        setIsSubmitting(false);
+        toast.error(err instanceof Error ? err.message : 'Receipt upload failed. Please try again.');
+        return;
+      }
+    }
     const paymentStatus =
-    paymentMethod === 'Stripe' ?
-    'Paid' :
     paymentMethod === 'BankTransfer' ?
     'AwaitingVerification' :
     'Pending';
@@ -238,14 +211,33 @@ export default function Checkout() {
       total,
       paymentMethod,
       paymentStatus,
-      receiptImage: receiptFile ? URL.createObjectURL(receiptFile) : undefined,
+      receiptImage,
       userId: newAccountUserId
     });
-    setIsSubmitting(false);
     if (error || !order) {
+      setIsSubmitting(false);
       toast.error(error ?? 'Could not place order. Please try again.');
       return;
     }
+    if (paymentMethod === 'Safepay') {
+      try {
+        const res = await fetch('/api/safepay/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ orderId: order.id })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.url) throw new Error(data.error ?? 'Could not start Safepay checkout.');
+        clearCart();
+        window.location.href = data.url;
+        return;
+      } catch (err) {
+        setIsSubmitting(false);
+        toast.error(err instanceof Error ? err.message : 'Could not start Safepay checkout.');
+        return;
+      }
+    }
+    setIsSubmitting(false);
     clearCart();
     router.push(`/order-confirmation/${order.id}`);
   };
@@ -423,14 +415,6 @@ export default function Checkout() {
                 receiptFile={receiptFile}
                 onReceiptChange={setReceiptFile}
                 error={receiptError} />
-
-              }
-
-              {paymentMethod === 'Stripe' &&
-              <StripeCardForm
-                values={cardValues}
-                errors={cardErrors}
-                onChange={handleCardChange} />
 
               }
             </section>

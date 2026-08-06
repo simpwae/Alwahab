@@ -10,6 +10,7 @@
     "test": "node --env-file-if-exists=.env.local ./node_modules/vitest/vitest.mjs run"
   },
   "dependencies": {
+    "@sfpy/node-sdk": "^3.0.2",
     "@supabase/ssr": "^0.12.2",
     "@supabase/supabase-js": "^2.110.5",
     "framer-motion": "^12.42.2",

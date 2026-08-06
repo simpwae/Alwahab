@@ -31,7 +31,7 @@ const PKR = new Intl.NumberFormat('en-PK', {
 const PAYMENT_METHOD_LABEL: Record<PaymentMethod, string> = {
   COD: 'Cash on Delivery',
   BankTransfer: 'Bank Transfer',
-  Stripe: 'Credit / Debit Card'
+  Safepay: 'Credit / Debit Card'
 };
 const PAYMENT_STATUS_LABEL: Record<Order['paymentStatus'], string> = {
   Paid: 'Paid',

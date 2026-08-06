@@ -52,7 +52,7 @@ export default function Terms() {
           <section>
             <h2 className="font-display text-base font-semibold text-ink">Payment Methods</h2>
             <p className="mt-1">
-              We accept Cash on Delivery, Visa, Mastercard, and Stripe, as well as direct bank
+              We accept Cash on Delivery, Visa, Mastercard, and Safepay, as well as direct bank
               transfer where offered at checkout.
             </p>
           </section>

@@ -42,7 +42,7 @@ const PAYMENT_METHOD_META: Record<
     label: 'Bank Transfer',
     icon: <BuildingIcon className="h-4 w-4" />
   },
-  Stripe: {
+  Safepay: {
     label: 'Credit / Debit Card',
     icon: <CreditCardIcon className="h-4 w-4" />
   }

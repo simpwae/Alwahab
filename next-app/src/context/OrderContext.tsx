@@ -49,6 +49,7 @@ interface OrderRow {
   fulfillment_status: Order['fulfillmentStatus'];
   receipt_image: string | null;
   tracking_number: string | null;
+  payment_reference: string | null;
   order_items?: OrderItemRow[];
 }
 
@@ -74,7 +75,8 @@ function fromRow(row: OrderRow): Order {
     paymentStatus: row.payment_status,
     fulfillmentStatus: row.fulfillment_status,
     receiptImage: row.receipt_image ?? undefined,
-    trackingNumber: row.tracking_number ?? undefined
+    trackingNumber: row.tracking_number ?? undefined,
+    paymentReference: row.payment_reference ?? undefined
   };
 }
 
@@ -178,7 +180,8 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
       paymentStatus: row.payment_status,
       fulfillmentStatus: row.fulfillment_status,
       receiptImage: row.receipt_image ?? undefined,
-      trackingNumber: row.tracking_number ?? undefined
+      trackingNumber: row.tracking_number ?? undefined,
+      paymentReference: row.payment_reference ?? undefined
     };
     setMyOrders((prev) => [order, ...prev]);
     return { order, error: null };
