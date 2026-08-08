@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useMemo } from 'react';
 import { XIcon, StarIcon } from 'lucide-react';
 import { Product } from '../../types';
 import { Button } from '../ui/Button';
@@ -52,11 +52,17 @@ export function FilterSidebar({
   onClearAll,
   className = ''
 }: FilterSidebarProps) {
-  const categoryFacets = getFacetCounts(allProducts, 'category');
-  const brandFacets = getFacetCounts(allProducts, 'brand');
-  const inStockCount = allProducts.filter(
-    (p) => p.stockQty > 0 && p.status !== 'OutOfStock'
-  ).length;
+  // FilterSidebar renders twice (desktop + the mobile sheet), and every one
+  // of these previously re-scanned the full catalog on every render
+  // (keystrokes, other filter toggles, the 1Hz FlashDeals timer re-render
+  // upstream, etc.) - memoizing keeps the scan tied to allProducts actually
+  // changing.
+  const categoryFacets = useMemo(() => getFacetCounts(allProducts, 'category'), [allProducts]);
+  const brandFacets = useMemo(() => getFacetCounts(allProducts, 'brand'), [allProducts]);
+  const inStockCount = useMemo(
+    () => allProducts.filter((p) => p.stockQty > 0 && p.status !== 'OutOfStock').length,
+    [allProducts]
+  );
   const toggleArrayValue = (key: 'categories' | 'brands', value: string) => {
     const current = filters[key];
     const next = current.includes(value) ?

@@ -48,7 +48,7 @@ export function ReviewProvider({ children }: {children: ReactNode;}) {
   const [reviews, setReviews] = useState<Review[]>([]);
 
   useEffect(() => {
-    supabase.from('reviews').select('*').then(({ data }) => {
+    supabase.from('reviews').select('*').order('date', { ascending: false }).then(({ data }) => {
       setReviews((data ?? []).map((row) => fromRow(row as ReviewRow)));
     });
   }, []);

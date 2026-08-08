@@ -99,7 +99,7 @@ export function ProductProvider({ children }: {children: ReactNode;}) {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    supabase.from('products').select('*').then(({ data }) => {
+    supabase.from('products').select('*').order('name').then(({ data }) => {
       setProducts((data ?? []).map((row) => fromRow(row as ProductRow)));
       setIsLoading(false);
     });

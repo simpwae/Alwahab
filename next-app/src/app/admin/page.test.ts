@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { groupSales, formatBucketLabel } from './page';
+import { groupSales, formatBucketLabel } from '../../lib/sales';
 import { Order } from '../../types';
 
 function makeOrder(date: string, total: number): Order {

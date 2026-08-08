@@ -47,12 +47,30 @@ function TimeBlock({ value, label }: {value: number;label: string;}) {
     </div>);
 
 }
+// Isolates the 1Hz tick in its own subtree: previously useCountdown's
+// per-second setState lived in FlashDeals itself, so every tick re-rendered
+// the whole product card grid alongside it.
+function FlashDealsCountdown({ targetTime }: { targetTime: number | null }) {
+  const { hours, minutes, seconds } = useCountdown(targetTime);
+  return (
+    <div
+      className="flex items-center gap-1.5"
+      role="timer"
+      aria-label="Time remaining for flash deals">
+
+      <TimeBlock value={hours} label="Hrs" />
+      <span className="pb-4 font-bold text-ink-muted">:</span>
+      <TimeBlock value={minutes} label="Min" />
+      <span className="pb-4 font-bold text-ink-muted">:</span>
+      <TimeBlock value={seconds} label="Sec" />
+    </div>);
+
+}
 export function FlashDeals({ products, status = 'idle' }: FlashDealsProps) {
   const [targetTime, setTargetTime] = useState<number | null>(null);
   useEffect(() => {
     setTargetTime(getEndOfDeal());
   }, []);
-  const { hours, minutes, seconds } = useCountdown(targetTime);
   const scrollRef = useRef<HTMLDivElement>(null);
   const { isWishlisted, toggleWishlist } = useWishlist();
   const scrollBy = (dir: 1 | -1) => {
@@ -79,17 +97,7 @@ export function FlashDeals({ products, status = 'idle' }: FlashDealsProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <div
-            className="flex items-center gap-1.5"
-            role="timer"
-            aria-label="Time remaining for flash deals">
-
-            <TimeBlock value={hours} label="Hrs" />
-            <span className="pb-4 font-bold text-ink-muted">:</span>
-            <TimeBlock value={minutes} label="Min" />
-            <span className="pb-4 font-bold text-ink-muted">:</span>
-            <TimeBlock value={seconds} label="Sec" />
-          </div>
+          <FlashDealsCountdown targetTime={targetTime} />
           <div className="hidden gap-1.5 sm:flex">
             <button
               type="button"

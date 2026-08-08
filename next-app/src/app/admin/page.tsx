@@ -1,6 +1,7 @@
 "use client";
 
-import React, { ReactNode, useMemo, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import {
   WalletIcon,
   ShoppingBagIcon,
@@ -9,27 +10,27 @@ import {
   UsersIcon,
   MessageSquareIcon } from
 'lucide-react';
-import {
-  ResponsiveContainer,
-  AreaChart,
-  Area,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Tooltip } from
-'recharts';
 import { AdminProtectedRoute } from '../../components/admin/AdminProtectedRoute';
 import { AdminLayout } from '../../components/admin/AdminLayout';
 import { StatusBadge, FULFILLMENT_STATUS_VARIANT } from '../../components/ui/StatusBadge';
 import { EmptyState } from '../../components/states/EmptyState';
-import { useAdminOrders } from '../../context/OrderContext';
-import { useReviews } from '../../context/ReviewContext';
-import { useProducts } from '../../context/ProductContext';
-import { useCustomers } from '../../context/CustomerContext';
-import { Order } from '../../types';
+import { ErrorState } from '../../components/states/ErrorState';
+import { Skeleton } from '../../components/states/Skeleton';
+import { createClient } from '../../lib/supabase/client';
+import { Granularity } from '../../lib/sales';
+import { FulfillmentStatus } from '../../types';
+
+const supabase = createClient('alwahab-admin-auth');
+
+// recharts is ~400kB and only used by this one chart - load it only when
+// the dashboard actually renders, instead of paying for it in every bundle
+// that happens to include this route.
+const SalesChart = dynamic(() => import('../../components/admin/SalesChart').then((m) => m.SalesChart), {
+  ssr: false,
+  loading: () => <div className="mt-4 h-64 w-full animate-pulse rounded-xl bg-surface" />
+});
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
-const UNFULFILLED = new Set(['Pending', 'Confirmed']);
 
 type TileTone = 'primary' | 'info' | 'warning' | 'danger';
 const TONE_CLASSES: Record<TileTone, string> = {
@@ -62,56 +63,73 @@ function StatTile({
 
 }
 
-export type Granularity = 'daily' | 'monthly';
-
-export function groupSales(orders: Order[], granularity: Granularity) {
-  const buckets = new Map<string, number>();
-  for (const o of orders) {
-    const key = granularity === 'monthly' ? o.date.slice(0, 7) : o.date;
-    buckets.set(key, (buckets.get(key) ?? 0) + o.total);
-  }
-  return [...buckets.entries()].
-  sort(([a], [b]) => a.localeCompare(b)).
-  map(([date, total]) => ({ date, total }));
+interface DashboardStats {
+  totalRevenue: number;
+  totalOrders: number;
+  pendingOrders: number;
+  lowStockProducts: number;
+  totalCustomers: number;
+  pendingReviews: number;
+  recentOrders: { id: string; date: string; customer: string; total: number; fulfillmentStatus: FulfillmentStatus }[];
+  salesData: { date: string; total: number }[];
 }
 
-export function formatBucketLabel(date: string, granularity: Granularity) {
-  const [year, month, day] = date.split('-').map(Number);
-  const parsed = new Date(year, month - 1, day || 1);
-  return parsed.toLocaleDateString('en-US',
-  granularity === 'monthly' ? { month: 'short', year: 'numeric' } : { month: 'short', day: 'numeric' }
-  );
-}
-
-function SalesTooltip({ active, payload }: { active?: boolean; payload?: { payload: { date: string; total: number }; }[]; granularity: Granularity; }) {
-  if (!active || !payload?.length) return null;
-  const point = payload[0].payload;
+function StatTileSkeleton() {
   return (
-    <div className="rounded-xl border border-gray-100 bg-white px-3 py-2 text-xs shadow-card">
-      <p className="font-medium text-ink">PKR {PKR.format(point.total)}</p>
+    <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-card sm:p-5">
+      <Skeleton className="h-9 w-9 rounded-xl" />
+      <Skeleton className="mt-3 h-6 w-2/3" />
+      <Skeleton className="mt-2 h-4 w-1/2" />
     </div>);
 
 }
 
 function AdminDashboard() {
-  const { orders } = useAdminOrders();
-  const { reviews } = useReviews();
-  const { products } = useProducts();
-  const { customers } = useCustomers();
   const [granularity, setGranularity] = useState<Granularity>('daily');
-  const salesData = useMemo(() => groupSales(orders, granularity), [orders, granularity]);
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
 
-  const totalRevenue = orders.reduce((sum, o) => sum + o.total, 0);
-  const pendingOrders = orders.filter((o) =>
-  UNFULFILLED.has(o.fulfillmentStatus)
-  ).length;
-  const lowStockProducts = products.filter(
-    (p) => p.stockQty <= p.lowStockThreshold
-  ).length;
-  const pendingReviews = reviews.filter(
-    (r) => r.status === 'Pending'
-  ).length;
-  const recentOrders = orders.slice(0, 5);
+  // Previously this page pulled every order (with every line item), every
+  // product, every review, and every customer into the browser via the
+  // global admin contexts just to compute a handful of numbers - now it's
+  // one SQL aggregate (see admin_dashboard_stats() in
+  // supabase/migrations/20260808120200_admin_dashboard_stats.sql) whose
+  // response size stays flat as order history grows.
+  const loadStats = React.useCallback(() => {
+    setStatus('loading');
+    supabase.rpc('admin_dashboard_stats', { p_granularity: granularity }).then(({ data, error }) => {
+      if (error || !data) {
+        setStatus('error');
+        return;
+      }
+      setStats(data as DashboardStats);
+      setStatus('success');
+    });
+  }, [granularity]);
+
+  useEffect(() => {
+    loadStats();
+  }, [loadStats]);
+
+  if (status === 'error') {
+    return (
+      <AdminLayout title="Dashboard">
+        <ErrorState onRetry={loadStats} />
+      </AdminLayout>);
+
+  }
+
+  if (status === 'loading' || !stats) {
+    return (
+      <AdminLayout title="Dashboard">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 6 }).map((_, i) => <StatTileSkeleton key={i} />)}
+        </div>
+      </AdminLayout>);
+
+  }
+
+  const { totalRevenue, totalOrders, pendingOrders, lowStockProducts, totalCustomers, pendingReviews, recentOrders, salesData } = stats;
 
   return (
     <AdminLayout title="Dashboard">
@@ -124,7 +142,7 @@ function AdminDashboard() {
         <StatTile
           icon={<ShoppingBagIcon className="h-5 w-5" />}
           label="Total Orders"
-          value={String(orders.length)}
+          value={String(totalOrders)}
           tone="info" />
 
         <StatTile
@@ -142,7 +160,7 @@ function AdminDashboard() {
         <StatTile
           icon={<UsersIcon className="h-5 w-5" />}
           label="Total Customers"
-          value={String(customers.length)}
+          value={String(totalCustomers)}
           tone="primary" />
 
         <StatTile
@@ -178,41 +196,7 @@ function AdminDashboard() {
           title="No sales data yet"
           description="Sales will appear here once orders come in." /> :
 
-        <div className="mt-4 h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={salesData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-                <defs>
-                  <linearGradient id="salesFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#0E7C6B" stopOpacity={0.25} />
-                    <stop offset="100%" stopColor="#0E7C6B" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <CartesianGrid vertical={false} stroke="#F1F2F4" />
-                <XAxis
-                dataKey="date"
-                tickFormatter={(d: string) => formatBucketLabel(d, granularity)}
-                tick={{ fill: '#6B7280', fontSize: 12 }}
-                axisLine={{ stroke: '#F1F2F4' }}
-                tickLine={false} />
-
-                <YAxis
-                tickFormatter={(v: number) => `${Math.round(v / 1000)}k`}
-                tick={{ fill: '#6B7280', fontSize: 12 }}
-                axisLine={false}
-                tickLine={false}
-                width={40} />
-
-                <Tooltip content={<SalesTooltip granularity={granularity} />} />
-                <Area
-                type="monotone"
-                dataKey="total"
-                stroke="#0E7C6B"
-                strokeWidth={2}
-                fill="url(#salesFill)" />
-
-              </AreaChart>
-            </ResponsiveContainer>
-          </div>
+        <SalesChart salesData={salesData} granularity={granularity} />
         }
       </div>
 

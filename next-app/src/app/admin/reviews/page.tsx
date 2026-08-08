@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { StarIcon, MessageSquareIcon, CheckIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { AdminProtectedRoute } from '../../../components/admin/AdminProtectedRoute';
@@ -22,6 +22,9 @@ function AdminReviews() {
   const { reviews, updateReview } = useReviews();
   const { products } = useProducts();
 
+  // O(reviews x products) via .find() inside the render map otherwise.
+  const productsById = useMemo(() => new Map(products.map((p) => [p.id, p])), [products]);
+
   const handleStatusChange = async (id: string, status: ReviewStatus) => {
     const error = await updateReview(id, { status });
     if (error) toast.error(error);
@@ -39,7 +42,7 @@ function AdminReviews() {
 
       <ul className="divide-y divide-gray-100 rounded-2xl border border-gray-100 bg-white">
           {reviews.map((r) => {
-            const product = products.find((p) => p.id === r.productId);
+            const product = productsById.get(r.productId);
             return (
               <li key={r.id} className="p-4 sm:p-5">
                 <div className="flex flex-wrap items-start justify-between gap-3">
