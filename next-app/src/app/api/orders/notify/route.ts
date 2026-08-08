@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '../../../../lib/supabase/admin';
 import { getResendClient, getFromEmail } from '../../../../lib/resend';
 import { orderConfirmationEmail, adminNewOrderEmail } from '../../../../lib/email-templates';
+import { consumeOrderToken } from '../../../../lib/idempotency';
+import { checkRateLimit } from '../../../../lib/rate-limit';
+import { getClientIp } from '../../../../lib/supabase/user-scoped';
 import { Order, OrderItem } from '../../../../types';
 
 interface OrderItemRow {
@@ -62,12 +65,37 @@ function orderFromRow(row: OrderRow): Order {
 }
 
 export async function POST(request: NextRequest) {
-  const { orderId } = await request.json();
+  const { orderId, token } = await request.json();
   if (!orderId || typeof orderId !== 'string') {
     return NextResponse.json({ error: 'orderId is required.' }, { status: 400 });
   }
+  if (!token || typeof token !== 'string') {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
 
-  const supabase = createAdminClient();
+  // Order IDs are a plain sequence (ALW-10235, ...) - without this check,
+  // this route was an unauthenticated email cannon: any orderId sent PII
+  // (name, address, phone, items) to the address on the order. The token
+  // is minted once by /api/orders/place and only the caller who just placed
+  // this exact order can have it.
+  const tokenOrderId = await consumeOrderToken(token, 'notify');
+  if (!tokenOrderId || tokenOrderId !== orderId) {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
+
+  const { success } = await checkRateLimit('ordersNotify', getClientIp(request.headers));
+  if (!success) {
+    return NextResponse.json({ error: 'Too many attempts.' }, { status: 429 });
+  }
+
+  let supabase;
+  try {
+    supabase = createAdminClient();
+  } catch (err) {
+    console.error('Order notify: admin client not configured', err);
+    return NextResponse.json({ error: 'Service temporarily unavailable.' }, { status: 500 });
+  }
+
   const { data: row, error: fetchError } = await supabase
     .from('orders')
     .select('*, order_items(*)')

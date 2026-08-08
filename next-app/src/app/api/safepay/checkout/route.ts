@@ -1,14 +1,40 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createAdminClient } from '../../../../lib/supabase/admin';
 import { getSafepayClient } from '../../../../lib/safepay';
+import { consumeOrderToken } from '../../../../lib/idempotency';
+import { checkRateLimit } from '../../../../lib/rate-limit';
+import { getClientIp } from '../../../../lib/supabase/user-scoped';
 
 export async function POST(request: NextRequest) {
-  const { orderId } = await request.json();
+  const { orderId, token } = await request.json();
   if (!orderId || typeof orderId !== 'string') {
     return NextResponse.json({ error: 'orderId is required.' }, { status: 400 });
   }
+  if (!token || typeof token !== 'string') {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
 
-  const supabase = createAdminClient();
+  // Without this, any caller could mint a Safepay session for someone
+  // else's order and overwrite its payment_reference (the field the
+  // webhook falls back to for matching) - see the webhook handler.
+  const tokenOrderId = await consumeOrderToken(token, 'safepay-checkout');
+  if (!tokenOrderId || tokenOrderId !== orderId) {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
+
+  const { success } = await checkRateLimit('safepayCheckout', getClientIp(request.headers));
+  if (!success) {
+    return NextResponse.json({ error: 'Too many attempts.' }, { status: 429 });
+  }
+
+  let supabase;
+  try {
+    supabase = createAdminClient();
+  } catch (err) {
+    console.error('Safepay checkout: admin client not configured', err);
+    return NextResponse.json({ error: 'Service temporarily unavailable.' }, { status: 500 });
+  }
+
   const { data: order, error: fetchError } = await supabase
     .from('orders')
     .select('id, total, payment_method, payment_status')
