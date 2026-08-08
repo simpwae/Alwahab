@@ -24,6 +24,7 @@ import { useCart } from '../../context/CartContext';
 import { useCoupons } from '../../context/CouponContext';
 import { useStoreSettings } from '../../context/StoreSettingsContext';
 import { findValidCoupon, calculateDiscount } from '../../data/sampleCoupons';
+import { cloudinaryUrl } from '../../lib/cloudinary';
 const PKR = new Intl.NumberFormat('en-PK', {
   maximumFractionDigits: 0
 });
@@ -34,12 +35,8 @@ export default function Cart() {
   const router = useRouter();
   const [promoInput, setPromoInput] = useState('');
   const [promoError, setPromoError] = useState<string | null>(null);
-  const discount = appliedCode ?
-  calculateDiscount(
-    findValidCoupon(appliedCode, subtotal, coupons).coupon!,
-    subtotal
-  ) :
-  0;
+  const appliedCoupon = appliedCode ? findValidCoupon(appliedCode, subtotal, coupons).coupon : null;
+  const discount = appliedCoupon ? calculateDiscount(appliedCoupon, subtotal) : 0;
   const shipping =
   lines.length === 0 ?
   0 :
@@ -103,7 +100,7 @@ export default function Cart() {
                   className="h-20 w-20 shrink-0 overflow-hidden rounded-xl border border-gray-100 sm:h-24 sm:w-24">
 
                       <img
-                    src={line.image}
+                    src={cloudinaryUrl(line.image, { width: 150 })}
                     alt={line.name}
                     className="h-full w-full object-cover" />
 

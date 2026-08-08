@@ -1,8 +1,25 @@
 "use client";
 
-import React, { useMemo, useState, createContext, useContext , ReactNode } from 'react';
+import React, { useMemo, useState, useEffect, createContext, useContext , ReactNode } from 'react';
 import { toast } from 'sonner';
 import { Product } from '../types';
+
+const CART_STORAGE_KEY = 'alwahab-cart';
+
+function loadStoredCart(): { lines: CartLine[]; appliedCode: string | null } {
+  if (typeof window === 'undefined') return { lines: [], appliedCode: null };
+  try {
+    const raw = window.localStorage.getItem(CART_STORAGE_KEY);
+    if (!raw) return { lines: [], appliedCode: null };
+    const parsed = JSON.parse(raw);
+    return {
+      lines: Array.isArray(parsed.lines) ? parsed.lines : [],
+      appliedCode: typeof parsed.appliedCode === 'string' ? parsed.appliedCode : null
+    };
+  } catch {
+    return { lines: [], appliedCode: null };
+  }
+}
 export interface CartLine {
   productId: string;
   name: string;
@@ -31,6 +48,21 @@ export function CartProvider({ children }: {children: ReactNode;}) {
   const [lines, setLines] = useState<CartLine[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [appliedCode, setAppliedCode] = useState<string | null>(null);
+
+  // Hydrate from localStorage after mount (SSR-safe: server and first client
+  // render both start empty, then this fills in) so a refresh doesn't wipe
+  // the cart.
+  useEffect(() => {
+    const stored = loadStoredCart();
+    if (stored.lines.length) setLines(stored.lines);
+    if (stored.appliedCode) setAppliedCode(stored.appliedCode);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.localStorage.setItem(CART_STORAGE_KEY, JSON.stringify({ lines, appliedCode }));
+  }, [lines, appliedCode]);
+
   const openCart = () => setIsOpen(true);
   const closeCart = () => setIsOpen(false);
   const addToCart = (product: Product, qty: number = 1, size?: string) => {
@@ -41,7 +73,7 @@ export function CartProvider({ children }: {children: ReactNode;}) {
         l.productId === product.id && l.size === size ?
         {
           ...l,
-          qty: Math.min(l.qty + qty, product.stockQty || l.qty + qty)
+          qty: Math.max(0, Math.min(l.qty + qty, product.stockQty))
         } :
         l
         );
@@ -70,14 +102,11 @@ export function CartProvider({ children }: {children: ReactNode;}) {
   };
   const updateQty = (productId: string, qty: number, size?: string) => {
     setLines((prev) =>
-    prev.map((l) =>
-    l.productId === productId && l.size === size ?
-    {
-      ...l,
-      qty: Math.max(1, Math.min(qty, l.stockQty || qty))
-    } :
-    l
-    )
+    prev.flatMap((l) => {
+      if (l.productId !== productId || l.size !== size) return [l];
+      const clamped = Math.max(0, Math.min(qty, l.stockQty));
+      return clamped === 0 ? [] : [{ ...l, qty: clamped }];
+    })
     );
   };
   const clearCart = () => {

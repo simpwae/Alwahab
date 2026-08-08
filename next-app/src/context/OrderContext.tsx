@@ -98,10 +98,18 @@ interface PlaceOrderInput {
   userId?: string;
 }
 
+interface PlaceOrderResult {
+  order: Order | null;
+  error: string | null;
+  /** Single-use tokens minted by /api/orders/place; null when Redis isn't configured. */
+  notifyToken: string | null;
+  checkoutToken: string | null;
+}
+
 interface CustomerOrdersValue {
   orders: Order[];
   getOrderById: (orderId: string) => Order | undefined;
-  placeOrder: (input: PlaceOrderInput) => Promise<{ order: Order | null; error: string | null }>;
+  placeOrder: (input: PlaceOrderInput) => Promise<PlaceOrderResult>;
   findOrder: (orderId: string, email: string) => Promise<Order | undefined>;
 }
 
@@ -126,7 +134,7 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
       setMyOrders([]);
       return;
     }
-    customerSupabase.from('orders').select('*, order_items(*)').then(({ data }) => {
+    customerSupabase.from('orders').select('*, order_items(*)').order('date', { ascending: false }).then(({ data }) => {
       setMyOrders((data ?? []).map((row) => fromRow(row as OrderRow)));
     });
   }, [user]);
@@ -137,32 +145,47 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
       setAllOrders([]);
       return;
     }
-    adminSupabase.from('orders').select('*, order_items(*)').then(({ data }) => {
+    adminSupabase.from('orders').select('*, order_items(*)').order('date', { ascending: false }).then(({ data }) => {
       setAllOrders((data ?? []).map((row) => fromRow(row as OrderRow)));
     });
   }, [admin]);
 
-  const placeOrder = async (input: PlaceOrderInput) => {
-    const { data, error } = await customerSupabase.rpc('place_order', {
-      p_user_id: input.userId ?? user?.id ?? null,
-      p_customer: input.customer,
-      p_email: input.email,
-      p_phone: input.phone,
-      p_shipping_address: input.shippingAddress,
-      p_coupon_code: input.couponCode ?? null,
-      p_subtotal: input.subtotal,
-      p_discount: input.discount,
-      p_shipping: input.shipping,
-      p_total: input.total,
-      p_payment_method: input.paymentMethod,
-      p_payment_status: input.paymentStatus,
-      p_receipt_image: input.receiptImage ?? null,
-      p_items: input.items.map((i) => ({
-        product_id: i.productId, name: i.name, image: i.image, price: i.price, qty: i.qty, size: i.size ?? null
-      }))
-    });
-    if (error) return { order: null, error: friendlyError(error.message) };
-    const row = data as OrderRow;
+  const placeOrder = async (input: PlaceOrderInput): Promise<PlaceOrderResult> => {
+    const { data: { session } } = await customerSupabase.auth.getSession();
+
+    let res: Response;
+    try {
+      res = await fetch('/api/orders/place', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          accessToken: session?.access_token ?? null,
+          userId: input.userId ?? user?.id ?? null,
+          customer: input.customer,
+          email: input.email,
+          phone: input.phone,
+          shippingAddress: input.shippingAddress,
+          couponCode: input.couponCode ?? null,
+          subtotal: input.subtotal,
+          discount: input.discount,
+          shipping: input.shipping,
+          total: input.total,
+          paymentMethod: input.paymentMethod,
+          paymentStatus: input.paymentStatus,
+          receiptImage: input.receiptImage ?? null,
+          items: input.items
+        })
+      });
+    } catch {
+      return { order: null, error: 'Could not reach the server. Please try again.', notifyToken: null, checkoutToken: null };
+    }
+
+    const body = await res.json();
+    if (!res.ok) {
+      return { order: null, error: friendlyError(body.error ?? 'Could not place order.'), notifyToken: null, checkoutToken: null };
+    }
+
+    const row = body.order as OrderRow;
     const order: Order = {
       id: row.id,
       date: row.date,
@@ -184,7 +207,7 @@ export function OrderProvider({ children }: {children: ReactNode;}) {
       paymentReference: row.payment_reference ?? undefined
     };
     setMyOrders((prev) => [order, ...prev]);
-    return { order, error: null };
+    return { order, error: null, notifyToken: body.notifyToken ?? null, checkoutToken: body.checkoutToken ?? null };
   };
 
   const findOrder = async (orderId: string, email: string): Promise<Order | undefined> => {

@@ -99,12 +99,8 @@ export default function Checkout() {
     undefined
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const discount = appliedCode ?
-  calculateDiscount(
-    findValidCoupon(appliedCode, subtotal, coupons).coupon!,
-    subtotal
-  ) :
-  0;
+  const appliedCoupon = appliedCode ? findValidCoupon(appliedCode, subtotal, coupons).coupon : null;
+  const discount = appliedCoupon ? calculateDiscount(appliedCoupon, subtotal) : 0;
   const shipping =
   subtotal - discount >= settings.shipping.freeShippingThreshold ?
   0 :
@@ -188,7 +184,7 @@ export default function Checkout() {
     paymentMethod === 'BankTransfer' ?
     'AwaitingVerification' :
     'Pending';
-    const { order, error } = await placeOrder({
+    const { order, error, notifyToken, checkoutToken } = await placeOrder({
       customer: contact.fullName,
       email: contact.email,
       phone: contact.phone,
@@ -219,18 +215,25 @@ export default function Checkout() {
       toast.error(error ?? 'Could not place order. Please try again.');
       return;
     }
-    fetch('/api/orders/notify', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ orderId: order.id }),
-      keepalive: true
-    }).catch(() => {});
+    if (notifyToken) {
+      fetch('/api/orders/notify', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: order.id, token: notifyToken }),
+        keepalive: true
+      }).catch(() => {});
+    }
     if (paymentMethod === 'Safepay') {
+      if (!checkoutToken) {
+        setIsSubmitting(false);
+        toast.error('Card payments are temporarily unavailable. Please choose Cash on Delivery or Bank Transfer.');
+        return;
+      }
       try {
         const res = await fetch('/api/safepay/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ orderId: order.id })
+          body: JSON.stringify({ orderId: order.id, token: checkoutToken })
         });
         const data = await res.json();
         if (!res.ok || !data.url) throw new Error(data.error ?? 'Could not start Safepay checkout.');
@@ -420,7 +423,8 @@ export default function Checkout() {
               <BankTransferPanel
                 receiptFile={receiptFile}
                 onReceiptChange={setReceiptFile}
-                error={receiptError} />
+                error={receiptError}
+                onValidationError={setReceiptError} />
 
               }
             </section>
