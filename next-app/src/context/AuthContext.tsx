@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback, createContext, useContext, ReactNode } from 'react';
 import type { Session } from '@supabase/supabase-js';
+import { toast } from 'sonner';
 import { createClient } from '../lib/supabase/client';
 import { User, Address } from '../types';
 
@@ -67,6 +68,16 @@ export function AuthProvider({ children }: {children: ReactNode;}) {
   }, [refreshFromSession]);
 
   const login = async (email: string, password: string) => {
+    const rateLimitRes = await fetch('/api/auth/rate-limit-check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ surface: 'customer-login', email })
+    }).catch(() => null);
+    if (rateLimitRes && !rateLimitRes.ok) {
+      const body = await rateLimitRes.json().catch(() => ({}));
+      return body.error ?? 'Too many attempts. Please try again later.';
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return error.message;
     // Hydrate user state before returning, not just via the onAuthStateChange
@@ -80,6 +91,16 @@ export function AuthProvider({ children }: {children: ReactNode;}) {
   };
 
   const signup = async (name: string, email: string, phone: string, password: string) => {
+    const rateLimitRes = await fetch('/api/auth/rate-limit-check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ surface: 'signup', email })
+    }).catch(() => null);
+    if (rateLimitRes && !rateLimitRes.ok) {
+      const body = await rateLimitRes.json().catch(() => ({}));
+      return { error: body.error ?? 'Too many attempts. Please try again later.', userId: null };
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -126,14 +147,24 @@ export function AuthProvider({ children }: {children: ReactNode;}) {
   };
 
   const updateAddress = async (id: string, patch: Omit<Address, 'id'>) => {
-    await supabase.from('addresses').update(patch).eq('id', id);
+    if (!user) return;
+    const { error } = await supabase.from('addresses').update(patch).eq('id', id).eq('user_id', user.id);
+    if (error) {
+      toast.error('Could not update address. Please try again.');
+      return;
+    }
     setUser((prev) =>
     prev ? { ...prev, addresses: prev.addresses.map((a) => a.id === id ? { id, ...patch } : a) } : prev
     );
   };
 
   const deleteAddress = async (id: string) => {
-    await supabase.from('addresses').delete().eq('id', id);
+    if (!user) return;
+    const { error } = await supabase.from('addresses').delete().eq('id', id).eq('user_id', user.id);
+    if (error) {
+      toast.error('Could not delete address. Please try again.');
+      return;
+    }
     setUser((prev) => prev ? { ...prev, addresses: prev.addresses.filter((a) => a.id !== id) } : prev);
   };
 

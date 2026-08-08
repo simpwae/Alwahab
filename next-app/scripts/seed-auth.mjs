@@ -14,9 +14,13 @@ const supabase = createClient(url, serviceKey, {
   auth: { autoRefreshToken: false, persistSession: false }
 });
 
-// Demo-only credentials, all seeded accounts share one password for ease of
-// manual testing. Not meant to survive past this mock-data phase.
-const SEED_PASSWORD = 'Alwahab123!';
+// All seeded accounts share one password for ease of manual testing. Must
+// be supplied by the caller (never hardcoded/committed) - e.g.
+//   SEED_PASSWORD='...' node --env-file=.env.local scripts/seed-auth.mjs
+const SEED_PASSWORD = process.env.SEED_PASSWORD;
+if (!SEED_PASSWORD || SEED_PASSWORD.length < 8) {
+  throw new Error('Set SEED_PASSWORD (8+ chars) in the environment before running this script.');
+}
 
 const CUSTOMERS = [
 { email: 'ayesha.khan@example.com', name: 'Ayesha Khan', phone: '0300-1234567', address: { label: 'Home', line1: 'House 12, Street 4, DHA Phase 5', city: 'Lahore', phone: '0300-1234567' } },

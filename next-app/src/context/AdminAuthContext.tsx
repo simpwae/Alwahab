@@ -54,17 +54,33 @@ export function AdminAuthProvider({ children }: {children: ReactNode;}) {
     return () => subscription.unsubscribe();
   }, [refreshFromSession]);
 
+  const GENERIC_LOGIN_ERROR = 'Invalid email or password.';
+
   const login = async (email: string, password: string) => {
+    const rateLimitRes = await fetch('/api/auth/rate-limit-check', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ surface: 'admin-login', email })
+    }).catch(() => null);
+    if (rateLimitRes && !rateLimitRes.ok) {
+      const body = await rateLimitRes.json().catch(() => ({}));
+      return body.error ?? GENERIC_LOGIN_ERROR;
+    }
+
     const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return error.message;
+    if (error) return GENERIC_LOGIN_ERROR;
 
     // Being authenticated isn't the same as being an admin - the admins
-    // table (RLS-gated to is_admin()) is the real authorization check.
+    // table (RLS-gated to is_admin()) is the real authorization check. This
+    // must return the SAME generic message as a wrong password: previously
+    // "No admin account found" only appeared after a successful password
+    // check, which let a caller confirm valid credentials for a non-admin
+    // account (an account-existence oracle).
     const { data: { session } } = await supabase.auth.getSession();
     const found = session?.user ? await hydrateAdmin(session.user.id) : null;
     if (!found) {
       await supabase.auth.signOut();
-      return 'No admin account found with that email.';
+      return GENERIC_LOGIN_ERROR;
     }
     setAdmin(found);
     return null;

@@ -1,11 +1,27 @@
 import { Metadata } from 'next';
+import { cache } from 'react';
 import { createClient } from '../../../lib/supabase/server';
 import React from 'react';
 
+// De-dupes the identical products query that generateMetadata() and the
+// layout body below both need for the same request.
+const getProduct = cache(async (id: string) => {
+  const supabase = await createClient();
+  const { data } = await supabase.from('products').select('*').eq('id', id).single();
+  return data;
+});
+
+// JSON.stringify does not escape '<' or '/', so a product description
+// containing "</script><script>..." would otherwise break out of this
+// block and execute. Products are admin-write-only, but this is stored XSS
+// with full-site blast radius from a single compromised/rogue admin.
+function escapeScriptContent(json: string): string {
+  return json.replace(/</g, '\\u003c');
+}
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
-  const supabase = await createClient();
-  const { data: product } = await supabase.from('products').select('*').eq('id', id).single();
+  const product = await getProduct(id);
 
   if (!product) {
     return {
@@ -33,8 +49,7 @@ export default async function ProductLayout({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const supabase = await createClient();
-  const { data: product } = await supabase.from('products').select('*').eq('id', id).single();
+  const product = await getProduct(id);
 
   if (!product) {
     return <>{children}</>;
@@ -72,7 +87,7 @@ export default async function ProductLayout({
     <>
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: escapeScriptContent(JSON.stringify(jsonLd)) }}
       />
       {children}
     </>

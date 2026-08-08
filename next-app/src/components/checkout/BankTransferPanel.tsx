@@ -9,10 +9,12 @@ import {
   XIcon } from
 'lucide-react';
 import { useStoreSettings } from '../../context/StoreSettingsContext';
+import { validateReceiptFile } from '../../lib/cloudinary';
 interface BankTransferPanelProps {
   receiptFile: File | null;
   onReceiptChange: (file: File | null) => void;
   error?: string;
+  onValidationError?: (message: string) => void;
 }
 function CopyableRow({ label, value }: {label: string;value: string;}) {
   const [copied, setCopied] = useState(false);
@@ -45,7 +47,8 @@ function CopyableRow({ label, value }: {label: string;value: string;}) {
 export function BankTransferPanel({
   receiptFile,
   onReceiptChange,
-  error
+  error,
+  onValidationError
 }: BankTransferPanelProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { settings } = useStoreSettings();
@@ -53,6 +56,14 @@ export function BankTransferPanel({
   settings.bankTransfer;
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
+    if (file) {
+      const validationError = validateReceiptFile(file);
+      if (validationError) {
+        onValidationError?.(validationError);
+        if (fileInputRef.current) fileInputRef.current.value = '';
+        return;
+      }
+    }
     onReceiptChange(file);
   };
   return (

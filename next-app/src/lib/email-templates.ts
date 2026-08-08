@@ -2,6 +2,21 @@ import { Order } from '../types';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
 
+// order.customer/email/phone/shippingAddress and every item.name/size are
+// end-user-supplied (place_order's text params) and interpolated raw into
+// these templates. Without this, a checkout name like
+// 'Ali<a href="https://evil.tld">Confirm payment</a>' becomes a working
+// link in both the customer confirmation and the admin notification email,
+// sent from the verified sending domain.
+export function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 const PAYMENT_METHOD_LABEL: Record<Order['paymentMethod'], string> = {
   COD: 'Cash on Delivery',
   BankTransfer: 'Bank Transfer',
@@ -14,7 +29,7 @@ function itemsRows(order: Order): string {
       (item) => `
         <tr>
           <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#111;">
-            ${item.name}${item.size ? ` (Size ${item.size})` : ''}<br/>
+            ${escapeHtml(item.name)}${item.size ? ` (Size ${escapeHtml(item.size)})` : ''}<br/>
             <span style="color:#777;font-size:12px;">Qty ${item.qty} &times; PKR ${PKR.format(item.price)}</span>
           </td>
           <td style="padding:10px 0;border-bottom:1px solid #eee;font-size:14px;color:#111;text-align:right;">
@@ -41,7 +56,7 @@ function wrapper(title: string, bodyHtml: string): string {
 
 export function orderConfirmationEmail(order: Order): { subject: string; html: string } {
   const body = `
-    <p style="font-size:14px;color:#444;">Hi ${order.customer}, thanks for your order! Here's a summary:</p>
+    <p style="font-size:14px;color:#444;">Hi ${escapeHtml(order.customer)}, thanks for your order! Here's a summary:</p>
     <p style="font-size:14px;color:#111;margin:16px 0 4px;"><strong>Order ${order.id}</strong></p>
     <table style="width:100%;border-collapse:collapse;">${itemsRows(order)}</table>
     <table style="width:100%;margin-top:12px;font-size:14px;color:#444;">
@@ -52,7 +67,7 @@ export function orderConfirmationEmail(order: Order): { subject: string; html: s
     </table>
     <p style="font-size:14px;color:#444;margin-top:16px;">
       Payment method: ${PAYMENT_METHOD_LABEL[order.paymentMethod]}<br/>
-      ${order.shippingAddress ? `Shipping to: ${order.shippingAddress.line1}, ${order.shippingAddress.city}` : ''}
+      ${order.shippingAddress ? `Shipping to: ${escapeHtml(order.shippingAddress.line1)}, ${escapeHtml(order.shippingAddress.city)}` : ''}
     </p>
     <p style="font-size:14px;color:#444;">You can track this order anytime at
       <a href="https://alwahabmart.com/track-order" style="color:#0E7C6B;">alwahabmart.com/track-order</a>.
@@ -67,7 +82,7 @@ export function adminNewOrderEmail(order: Order): { subject: string; html: strin
     <table style="width:100%;border-collapse:collapse;">${itemsRows(order)}</table>
     <p style="font-size:14px;color:#111;font-weight:bold;margin-top:12px;">Total: PKR ${PKR.format(order.total)}</p>
     <p style="font-size:14px;color:#444;">
-      Customer: ${order.customer}${order.email ? ` (${order.email})` : ''}${order.phone ? ` &middot; ${order.phone}` : ''}<br/>
+      Customer: ${escapeHtml(order.customer)}${order.email ? ` (${escapeHtml(order.email)})` : ''}${order.phone ? ` &middot; ${escapeHtml(order.phone)}` : ''}<br/>
       Payment: ${PAYMENT_METHOD_LABEL[order.paymentMethod]} &middot; ${order.paymentStatus}
     </p>
     <p style="font-size:14px;">

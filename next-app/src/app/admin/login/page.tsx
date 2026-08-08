@@ -76,10 +76,6 @@ export default function AdminLogin() {
             {isSubmitting ? 'Signing In…' : 'Sign In'}
           </Button>
         </form>
-
-        <p className="mt-4 rounded-xl bg-white/10 p-3 text-center text-xs text-white/70">
-          Demo account: admin@alwahab.pk — password: Alwahab123!
-        </p>
       </div>
     </div>);
 
