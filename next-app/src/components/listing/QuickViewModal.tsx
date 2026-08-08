@@ -14,6 +14,7 @@ import { Product } from '../../types';
 import { useCart } from '../../context/CartContext';
 import { StatusBadge } from '../ui/StatusBadge';
 import { Button } from '../ui/Button';
+import { cloudinaryUrl } from '../../lib/cloudinary';
 const PKR = new Intl.NumberFormat('en-PK', {
   maximumFractionDigits: 0
 });
@@ -95,7 +96,7 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
               <div className="bg-surface p-5">
                 <div className="aspect-square overflow-hidden rounded-xl bg-white">
                   <img
-                  src={product.images[activeImage] ?? product.images[0]}
+                  src={cloudinaryUrl(product.images[activeImage] ?? product.images[0], { width: 600 })}
                   alt={product.name}
                   className="h-full w-full object-cover" />
 
@@ -111,7 +112,7 @@ export function QuickViewModal({ product, onClose }: QuickViewModalProps) {
                   className={`h-14 w-14 overflow-hidden rounded-lg border-2 ${activeImage === i ? 'border-primary' : 'border-transparent'}`}>
 
                         <img
-                    src={img}
+                    src={cloudinaryUrl(img, { width: 100 })}
                     alt=""
                     className="h-full w-full object-cover" />
 

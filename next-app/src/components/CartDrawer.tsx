@@ -11,6 +11,7 @@ import {
   TrashIcon } from
 'lucide-react';
 import { useCart } from '../context/CartContext';
+import { cloudinaryUrl } from '../lib/cloudinary';
 import { Button } from './ui/Button';
 import { EmptyState } from './states/EmptyState';
 const PKR = new Intl.NumberFormat('en-PK', {
@@ -88,7 +89,7 @@ export function CartDrawer() {
                   {lines.map((line) =>
               <li key={`${line.productId}-${line.size ?? ''}`} className="flex gap-3">
                       <img
-                  src={line.image}
+                  src={cloudinaryUrl(line.image, { width: 150 })}
                   alt={line.name}
                   className="h-20 w-20 shrink-0 rounded-xl border border-gray-100 object-cover" />
 

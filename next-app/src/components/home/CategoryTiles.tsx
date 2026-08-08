@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { cloudinaryUrl } from '../../lib/cloudinary';
 import {
   CpuIcon,
   WatchIcon,
@@ -72,7 +73,7 @@ export function CategoryTiles() {
 
             <div className="relative h-14 w-14 overflow-hidden rounded-full ring-2 ring-primary-50">
               <img
-              src={tile.image}
+              src={cloudinaryUrl(tile.image, { width: 150 })}
               alt=""
               className="h-full w-full object-cover"
               aria-hidden="true" />

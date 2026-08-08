@@ -10,6 +10,7 @@ import { StatusBadge, PRODUCT_STATUS_VARIANT } from '../../../components/ui/Stat
 import { EmptyState } from '../../../components/states/EmptyState';
 import { Button } from '../../../components/ui/Button';
 import { useProducts } from '../../../context/ProductContext';
+import { cloudinaryUrl } from '../../../lib/cloudinary';
 import { useAdminOrders } from '../../../context/OrderContext';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
@@ -143,7 +144,7 @@ function AdminProducts() {
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <img
-                          src={p.images[0]}
+                          src={cloudinaryUrl(p.images[0], { width: 100 })}
                           alt=""
                           className="h-10 w-10 shrink-0 rounded-lg border border-gray-100 object-cover" />
 

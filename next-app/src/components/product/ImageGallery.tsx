@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from 'react';
 import { ZoomInIcon } from 'lucide-react';
+import { cloudinaryUrl } from '../../lib/cloudinary';
 interface ImageGalleryProps {
   images: string[];
   productName: string;
@@ -34,7 +35,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
         onMouseMove={handleMouseMove}>
 
         <img
-          src={images[activeIndex]}
+          src={cloudinaryUrl(images[activeIndex], { width: 1000 })}
           alt={productName}
           className="h-full w-full object-cover transition-transform duration-150"
           style={
@@ -65,7 +66,7 @@ export function ImageGallery({ images, productName }: ImageGalleryProps) {
           aria-current={activeIndex === i}
           className={`h-16 w-16 shrink-0 overflow-hidden rounded-xl border-2 transition-colors sm:h-20 sm:w-20 ${activeIndex === i ? 'border-primary' : 'border-gray-200 hover:border-gray-300'}`}>
 
-              <img src={img} alt="" className="h-full w-full object-cover" />
+              <img src={cloudinaryUrl(img, { width: 150 })} alt="" className="h-full w-full object-cover" />
             </button>
         )}
         </div>

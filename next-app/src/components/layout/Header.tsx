@@ -19,6 +19,7 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { useWishlist } from '../../context/WishlistContext';
 import { useProducts } from '../../context/ProductContext';
+import { cloudinaryUrl } from '../../lib/cloudinary';
 const CATEGORY_LINKS = [
 {
   label: 'Electronics',
@@ -178,7 +179,7 @@ export function Header() {
                   className="flex items-center gap-3 px-3.5 py-2.5 text-sm transition-colors hover:bg-surface">
 
                       <img
-                    src={product.images[0]}
+                    src={cloudinaryUrl(product.images[0], { width: 100 })}
                     alt=""
                     className="h-10 w-10 rounded-lg object-cover" />
 

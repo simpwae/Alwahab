@@ -12,7 +12,7 @@ import { EmptyState } from '../components/states/EmptyState';
 import { useProducts } from '../context/ProductContext';
 import { Product, ProductSize, ProductStatus } from '../types';
 import { CATEGORIES } from '../data/categories';
-import { uploadToCloudinary } from '../lib/cloudinary';
+import { uploadToCloudinary, cloudinaryUrl } from '../lib/cloudinary';
 
 const STATUSES: ProductStatus[] = ['Active', 'Draft', 'OutOfStock'];
 
@@ -259,7 +259,7 @@ function AdminProductForm() {
             {values.images.map((url, i) =>
             <div key={url + i} className="group relative h-20 w-20 shrink-0">
                 <img
-                src={url}
+                src={cloudinaryUrl(url, { width: 150 })}
                 alt=""
                 className="h-full w-full rounded-xl border border-gray-200 object-cover" />
 

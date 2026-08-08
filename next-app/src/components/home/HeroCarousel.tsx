@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronLeftIcon, ChevronRightIcon } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { cloudinaryUrl } from '../../lib/cloudinary';
 interface Slide {
   id: string;
   eyebrow: string;
@@ -104,7 +105,7 @@ export function HeroCarousel() {
             }}>
 
             <img
-              src={slide.image}
+              src={cloudinaryUrl(slide.image, { width: 1600 })}
               alt=""
               aria-hidden="true"
               className="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-luminosity" />

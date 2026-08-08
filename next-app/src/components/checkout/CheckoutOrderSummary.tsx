@@ -3,6 +3,7 @@
 import React from 'react';
 import { CartLine } from '../../context/CartContext';
 import { Button } from '../ui/Button';
+import { cloudinaryUrl } from '../../lib/cloudinary';
 const PKR = new Intl.NumberFormat('en-PK', {
   maximumFractionDigits: 0
 });
@@ -39,7 +40,7 @@ export function CheckoutOrderSummary({
         <li key={`${line.productId}-${line.size ?? ''}`} className="flex items-center gap-3">
             <div className="relative h-14 w-14 shrink-0 overflow-hidden rounded-lg border border-gray-200">
               <img
-              src={line.image}
+              src={cloudinaryUrl(line.image, { width: 150 })}
               alt={line.name}
               className="h-full w-full object-cover" />
 

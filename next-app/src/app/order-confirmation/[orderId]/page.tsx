@@ -24,6 +24,7 @@ import {
 import { EmptyState } from '../../../components/states/EmptyState';
 import { useOrders } from '../../../context/OrderContext';
 import { Order, PaymentMethod } from '../../../types';
+import { cloudinaryUrl } from '../../../lib/cloudinary';
 const PKR = new Intl.NumberFormat('en-PK', {
   maximumFractionDigits: 0
 });
@@ -129,7 +130,7 @@ export default function OrderConfirmation() {
               className="flex items-center gap-3 p-4 sm:p-5">
 
                 <img
-                src={item.image}
+                src={cloudinaryUrl(item.image, { width: 150 })}
                 alt={item.name}
                 className="h-16 w-16 shrink-0 rounded-lg border border-gray-100 object-cover" />
 

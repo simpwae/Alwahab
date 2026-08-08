@@ -12,6 +12,7 @@ import { FormField } from '../../../../components/ui/FormField';
 import { Button } from '../../../../components/ui/Button';
 import { useAdminOrders } from '../../../../context/OrderContext';
 import { FulfillmentStatus, PaymentStatus } from '../../../../types';
+import { cloudinaryUrl } from '../../../../lib/cloudinary';
 import { ImageIcon } from 'lucide-react';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
@@ -132,7 +133,7 @@ function AdminOrderDetail() {
             {order.items.map((item) =>
             <li key={`${item.productId}-${item.size ?? ''}`} className="flex items-center gap-3 p-4 sm:p-5">
                 <img
-                src={item.image}
+                src={cloudinaryUrl(item.image, { width: 150 })}
                 alt={item.name}
                 className="h-16 w-16 shrink-0 rounded-lg border border-gray-100 object-cover" />
 

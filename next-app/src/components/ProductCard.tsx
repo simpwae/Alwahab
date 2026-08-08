@@ -6,6 +6,7 @@ import { HeartIcon, ShoppingCartIcon, StarIcon, EyeIcon } from 'lucide-react';
 import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { StatusBadge } from './ui/StatusBadge';
+import { cloudinaryUrl } from '../lib/cloudinary';
 interface ProductCardProps {
   product: Product;
   wishlisted?: boolean;
@@ -39,8 +40,10 @@ export function ProductCard({
         aria-label={product.name}>
 
         <img
-          src={hovered ? secondImage : product.images[0]}
+          src={cloudinaryUrl(hovered ? secondImage : product.images[0], { width: 400 })}
           alt={product.name}
+          width={400}
+          height={400}
           className="h-full w-full object-cover transition-opacity duration-200"
           loading="lazy" />
 
