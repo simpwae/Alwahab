@@ -50,6 +50,9 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  verification: {
+    google: "ANmhtQvhtNna9R9IYipII4N42Fe6GowsKPuWA2kX8SU",
+  },
 };
 
 const organizationJsonLd = {
