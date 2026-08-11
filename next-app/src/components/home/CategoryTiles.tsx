@@ -23,42 +23,42 @@ const TILES: CategoryTile[] = [
   href: '/category/electronics',
   icon: <CpuIcon className="h-5 w-5" />,
   image:
-  'https://images.unsplash.com/photo-1518444065439-e933c06ce9cd?w=300&q=80'
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462687/wabwhcc2kl6q16rnufkd.jpg'
 },
 {
   label: 'Accessories',
   href: '/category/accessories',
   icon: <WatchIcon className="h-5 w-5" />,
   image:
-  'https://images.unsplash.com/photo-1627123424574-724758594e93?w=300&q=80'
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462688/uxap2jl6ozxecpbu8dtd.jpg'
 },
 {
   label: 'Home & Kitchen',
   href: '/category/home-kitchen',
   icon: <UtensilsCrossedIcon className="h-5 w-5" />,
   image:
-  'https://images.unsplash.com/photo-1584990347449-a5d9f800a783?w=300&q=80'
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462709/gxctjlpnuyhfpzq0mc16.jpg'
 },
 {
   label: 'Gadgets',
   href: '/category/gadgets',
   icon: <ZapIcon className="h-5 w-5" />,
   image:
-  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&q=80'
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462686/iotvmzgy9y9pjjlt6kpj.jpg'
 },
 {
   label: 'Lifestyle',
   href: '/category/lifestyle',
   icon: <SparklesIcon className="h-5 w-5" />,
   image:
-  'https://images.unsplash.com/photo-1602928321679-560bb453f190?w=300&q=80'
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462689/b5wjchrmyuscdzf5qb7b.jpg'
 },
 {
   label: 'Deals',
   href: '/deals',
   icon: <FlameIcon className="h-5 w-5" />,
   image:
-  'https://images.unsplash.com/photo-1607082349566-187342175e2f?w=300&q=80'
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462690/ewrzrh2uqhkzqzwsozng.jpg'
 }];
 
 export function CategoryTiles() {

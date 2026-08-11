@@ -29,4 +29,4 @@ Next.js 16 (App Router) + TypeScript, React 19, Tailwind CSS v4, Supabase (Postg
 
 ## Current status
 
-Full customer storefront, customer account, and admin panel are built and live on Next.js, all 9 non-cart contexts backed by real Supabase tables (RLS-gated). Deployed to Vercel at `alwahab.vercel.app`. See `handoff.md` for the detailed session-by-session history; `PROJECT-CONTEXT.md` describes the original pre-migration Vite-era plan and is now historical.
+Full customer storefront, customer account, and admin panel are built and live on Next.js, all 9 non-cart contexts backed by real Supabase tables (RLS-gated). Deployed to Vercel, live at the custom domain `alwahabmart.com` (also reachable at `alwahab.vercel.app`). See `handoff.md` for the detailed session-by-session history; `PROJECT-CONTEXT.md` describes the original pre-migration Vite-era plan and is now historical.

@@ -2,9 +2,10 @@ import type { Metadata } from "next";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { Providers } from "./providers";
+import { SITE_URL } from "../lib/site";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://alwahabmart.com"),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Alwahab | Your Ultimate Store",
     template: "%s | Alwahab",
@@ -13,10 +14,13 @@ export const metadata: Metadata = {
   keywords: ["ecommerce", "pakistan", "electronics", "gadgets", "home accessories", "alwahab"],
   authors: [{ name: "Alwahab Store" }],
   creator: "Alwahab",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
     type: "website",
     locale: "en_PK",
-    url: "https://alwahabmart.com",
+    url: SITE_URL,
     siteName: "Alwahab Store",
     title: "Alwahab | Your Ultimate Store",
     description: "Shop the best deals on electronics, accessories, and home goods at Alwahab.",
@@ -48,6 +52,26 @@ export const metadata: Metadata = {
   },
 };
 
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Alwahab",
+  url: SITE_URL,
+  logo: `${SITE_URL}/og-image.png`,
+};
+
+const websiteJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "Alwahab",
+  url: SITE_URL,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: `${SITE_URL}/search?q={search_term_string}`,
+    "query-input": "required name=search_term_string",
+  },
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -56,6 +80,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col font-sans">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteJsonLd) }}
+        />
         <Providers>
           {children}
           <Toaster position="top-right" richColors closeButton />

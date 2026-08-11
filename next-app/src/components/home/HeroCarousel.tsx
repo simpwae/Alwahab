@@ -25,7 +25,7 @@ const SLIDES: Slide[] = [
   ctaLabel: 'Shop Electronics',
   ctaHref: '/category/electronics',
   image:
-  'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1000&q=80',
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462684/mniceurmsbczei6hrcyl.jpg',
   bg: '#0E7C6B'
 },
 {
@@ -36,7 +36,7 @@ const SLIDES: Slide[] = [
   ctaLabel: 'Shop Home & Kitchen',
   ctaHref: '/category/home-kitchen',
   image:
-  'https://images.unsplash.com/photo-1584990347449-a5d9f800a783?w=1000&q=80',
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462709/gxctjlpnuyhfpzq0mc16.jpg',
   bg: '#0B6255'
 },
 {
@@ -47,7 +47,7 @@ const SLIDES: Slide[] = [
   ctaLabel: 'Shop Gadgets',
   ctaHref: '/category/gadgets',
   image:
-  'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=1000&q=80',
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462686/iotvmzgy9y9pjjlt6kpj.jpg',
   bg: '#1A1A1A'
 }];
 

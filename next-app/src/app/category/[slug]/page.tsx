@@ -10,6 +10,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${categoryName} Products`,
     description: `Shop the latest ${categoryName} products at Alwahab with amazing deals and fast delivery.`,
+    alternates: {
+      canonical: `/category/${slug}`,
+    },
     openGraph: {
       title: `${categoryName} Products | Alwahab`,
       description: `Shop the latest ${categoryName} products at Alwahab.`,

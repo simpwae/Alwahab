@@ -1,6 +1,8 @@
 import { Metadata } from 'next';
 import { cache } from 'react';
 import { createClient } from '../../../lib/supabase/server';
+import { SITE_URL } from '../../../lib/site';
+import { categoryToSlug } from '../../../utils/productFilters';
 import React from 'react';
 
 // De-dupes the identical products query that generateMetadata() and the
@@ -32,6 +34,9 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return {
     title: product.name,
     description: product.description,
+    alternates: {
+      canonical: `/product/${id}`,
+    },
     openGraph: {
       title: product.name,
       description: product.description,
@@ -68,7 +73,7 @@ export default async function ProductLayout({
     },
     offers: {
       '@type': 'Offer',
-      url: `https://alwahabmart.com/product/${product.id}`,
+      url: `${SITE_URL}/product/${product.id}`,
       priceCurrency: 'PKR',
       price: product.selling_price,
       itemCondition: 'https://schema.org/NewCondition',
@@ -83,11 +88,30 @@ export default async function ProductLayout({
     })
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: product.category,
+        item: `${SITE_URL}/category/${categoryToSlug(product.category)}`,
+      },
+      { '@type': 'ListItem', position: 3, name: product.name, item: `${SITE_URL}/product/${product.id}` },
+    ],
+  };
+
   return (
     <>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: escapeScriptContent(JSON.stringify(jsonLd)) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: escapeScriptContent(JSON.stringify(breadcrumbJsonLd)) }}
       />
       {children}
     </>
