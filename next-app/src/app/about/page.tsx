@@ -25,8 +25,8 @@ export default function About() {
         <div className="mt-6 space-y-4 text-sm leading-relaxed text-ink-muted sm:text-base">
           <p>
             Alwahab is a multi-category online store serving customers across
-            Pakistan with electronics, accessories, home &amp; kitchen
-            essentials, and everyday gadgets — all priced in PKR.
+            Pakistan with electronics, home &amp; kitchen essentials, and baby
+            gear — all priced in PKR.
           </p>
           <p>
             We started with a simple goal: make it easy to find quality

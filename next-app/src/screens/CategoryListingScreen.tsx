@@ -41,21 +41,35 @@ const CATEGORY_SEO: Record<
   electronics: {
     title: 'Shop Electronics Online at Alwahab',
     paragraphs: [
-    'Discover the latest in consumer electronics at Alwahab — from noise-cancelling headphones to portable Bluetooth speakers. We source only genuine, authentic products from trusted brands, backed by our 7-day return policy.',
-    'Whether you are looking for daily-use accessories or the newest tech gadgets, our electronics collection is updated regularly with new arrivals and flash deals. Enjoy fast nationwide delivery and cash on delivery on eligible orders.']
+    'Discover the latest in consumer electronics at Alwahab — from hair styling tools to portable blenders and phone accessories. We source only genuine, authentic products from trusted brands, backed by our 7-day return policy.',
+    'Our electronics collection is updated regularly with new arrivals and flash deals. Enjoy fast nationwide delivery and cash on delivery on eligible orders.']
+
+  },
+  'home-kitchen': {
+    title: 'Shop Home & Kitchen Online at Alwahab',
+    paragraphs: [
+    'From non-stick cookware sets to frying pans, hot plates, and food choppers, Alwahab stocks everyday kitchen essentials built to last. Every item is quality-checked before listing and covered by our 7-day return policy.',
+    'Browse our full Home & Kitchen range with nationwide delivery, cash on delivery, and secure bank transfer at checkout.']
+
+  },
+  'baby-gear': {
+    title: 'Shop Baby Gear Online at Alwahab',
+    paragraphs: [
+    'Everything for your little one in one place — feeding and nursing essentials, diapering and bath supplies, strollers and car seats, toys, and baby clothing. We stock only genuine products from brands parents trust.',
+    'Our Baby Gear collection is updated regularly with new arrivals. Enjoy fast nationwide delivery and cash on delivery on eligible orders.']
 
   },
   deals: {
     title: 'Best Deals & Discounts at Alwahab',
     paragraphs: [
-    "Explore Alwahab's biggest discounts across electronics, accessories, home & kitchen, gadgets, and lifestyle categories. Deals are updated frequently, so check back often to avoid missing out.",
+    "Explore Alwahab's biggest discounts across our electronics, home & kitchen, and baby gear collections. Deals are updated frequently, so check back often to avoid missing out.",
     'All discounted items are 100% genuine and covered by our standard return policy. Pay via Cash on Delivery, bank transfer, or card at checkout.']
 
   },
   default: {
     title: 'Shop at Alwahab',
     paragraphs: [
-    'Alwahab brings you a curated multi-category shopping experience spanning electronics, accessories, home & kitchen, gadgets, and lifestyle products — all in one trusted store.',
+    'Alwahab brings you a curated multi-category shopping experience spanning electronics, home & kitchen, and baby gear — all in one trusted store.',
     'Every product is quality-checked before listing, and we offer nationwide delivery with cash on delivery, secure bank transfer, and card payment options.']
 
   }

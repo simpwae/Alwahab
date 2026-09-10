@@ -56,10 +56,6 @@ describe('applyFilters', () => {
     expect(result.map((p) => p.id)).toEqual(['p1', 'p3']);
   });
 
-  it('filters by maxPrice', () => {
-    const result = applyFilters(products, { ...createDefaultFilters(), maxPrice: 900 });
-    expect(result.map((p) => p.id)).toEqual(['p3']);
-  });
 });
 
 describe('applySort', () => {

@@ -32,3 +32,40 @@ body {
   background: #ffffff;
   color: #1A1A1A;
 }
+
+/* Order-invoice printing. Only the admin order detail page opts in (it sets
+   data-print="order" on <html>), so this hides the admin shell everywhere
+   without affecting any other screen's print behaviour. */
+@media print {
+  html[data-print="order"] aside,
+  html[data-print="order"] [data-print-hide] {
+    display: none !important;
+  }
+
+  html[data-print="order"] body {
+    background: #ffffff;
+  }
+
+  /* The admin shell is a flex row; dropping the sidebar leaves <main> needing
+     to reclaim the full width or browsers print it at its flex-basis. */
+  html[data-print="order"] main {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  html[data-print="order"] main > div {
+    max-width: none !important;
+  }
+
+  html[data-print="order"] [data-print-block] {
+    break-inside: avoid;
+  }
+
+  /* Tailwind borders/backgrounds are stripped by browsers' default
+     "don't print backgrounds" setting; the invoice needs its rules. */
+  html[data-print="order"] [data-print-block] {
+    border-color: #d1d5db !important;
+    box-shadow: none !important;
+  }
+}

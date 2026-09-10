@@ -42,10 +42,10 @@ const SLIDES: Slide[] = [
 {
   id: 's3',
   eyebrow: 'Just Dropped',
-  title: 'Gadgets for Everyday Life',
-  subtitle: 'Discover fitness trackers, hubs, and smart accessories.',
-  ctaLabel: 'Shop Gadgets',
-  ctaHref: '/category/gadgets',
+  title: 'Everything for Your Little One',
+  subtitle: 'Feeding, diapering, strollers and toys from brands you trust.',
+  ctaLabel: 'Shop Baby Gear',
+  ctaHref: '/category/baby-gear',
   image:
   'https://res.cloudinary.com/taptt8ob/image/upload/v1786462686/iotvmzgy9y9pjjlt6kpj.jpg',
   bg: '#1A1A1A'

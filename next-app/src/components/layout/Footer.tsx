@@ -11,6 +11,7 @@ import {
   PhoneIcon } from
 'lucide-react';
 import { Logo } from './Logo';
+import { STORE_PHONE_DISPLAY, STORE_PHONE_TEL, WHATSAPP_NUMBER } from '../../lib/site';
 const QUICK_LINKS = [
 {
   label: 'Home',
@@ -55,16 +56,12 @@ const CATEGORIES = [
   slug: 'electronics'
 },
 {
-  label: 'Accessories',
-  slug: 'accessories'
-},
-{
   label: 'Home & Kitchen',
   slug: 'home-kitchen'
 },
 {
-  label: 'Gadgets',
-  slug: 'gadgets'
+  label: 'Baby Gear',
+  slug: 'baby-gear'
 },
 {
   label: 'Deals',
@@ -78,9 +75,8 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-3 max-w-xs text-sm text-ink-muted">
-            Alwahab is your trusted destination for electronics, accessories,
-            home &amp; kitchen, gadgets, and lifestyle products — quality you
-            can count on.
+            Alwahab is your trusted destination for electronics, home &amp;
+            kitchen, and baby gear — quality you can count on.
           </p>
           <div className="mt-4 space-y-2">
             <p className="flex items-start gap-2 text-sm text-ink-muted">
@@ -88,10 +84,10 @@ export function Footer() {
               <span>Shop # 14, Block B, National Market, Karkhano, Peshawar, Pakistan</span>
             </p>
             <a
-              href="tel:+923255897659"
+              href={`tel:${STORE_PHONE_TEL}`}
               className="flex items-center gap-2 text-sm text-ink-muted transition-colors hover:text-primary">
               <PhoneIcon className="h-4 w-4 shrink-0 text-primary" />
-              <span>+92 325 5897659</span>
+              <span>{STORE_PHONE_DISPLAY}</span>
             </a>
           </div>
           <div className="mt-4 flex items-center gap-3">
@@ -110,7 +106,9 @@ export function Footer() {
               <InstagramIcon className="h-4 w-4" />
             </a>
             <a
-              href="#"
+              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              target="_blank"
+              rel="noopener noreferrer"
               aria-label="WhatsApp"
               className="flex h-9 w-9 items-center justify-center rounded-full bg-white text-ink-muted shadow-soft transition-colors hover:text-primary">
 

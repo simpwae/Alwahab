@@ -12,7 +12,8 @@ import {
   TruckIcon,
   RotateCcwIcon,
   WalletIcon,
-  PackageXIcon } from
+  PackageXIcon,
+  MessageCircleIcon } from
 'lucide-react';
 import { Header } from '../../../components/layout/Header';
 import { TopUtilityBar } from '../../../components/layout/TopUtilityBar';
@@ -29,7 +30,8 @@ import { ProductDetailSkeleton } from '../../../components/states/Skeleton';
 import { useCart } from '../../../context/CartContext';
 import { useProducts } from '../../../context/ProductContext';
 import { useReviews } from '../../../context/ReviewContext';
-import { categoryToSlug } from '../../../utils/productFilters';
+import { categoryToSlug, formatSoldCount } from '../../../utils/productFilters';
+import { SITE_URL, whatsappOrderLink } from '../../../lib/site';
 const PKR = new Intl.NumberFormat('en-PK', {
   maximumFractionDigits: 0
 });
@@ -57,6 +59,7 @@ export default function ProductDetail() {
   }, [product, products]);
   // Mock gating: in a real app this would check the user's order history for a delivered order of this product.
   const hasPurchased = false;
+  const soldLabel = product ? formatSoldCount(product.unitsSold) : null;
   if (isLoading) {
     return (
       <div className="min-h-full w-full bg-white">
@@ -183,9 +186,9 @@ export default function ProductDetail() {
 
                 <StatusBadge label="In Stock" variant="success" />
                 }
-                {product.unitsSold > 0 &&
-                <span className="text-sm text-ink-muted">
-                    {product.unitsSold} sold
+                {soldLabel &&
+                <span className="rounded-full bg-surface px-2.5 py-0.5 text-xs font-semibold text-ink-muted ring-1 ring-gray-200">
+                    {soldLabel}
                   </span>
                 }
               </div>
@@ -270,6 +273,16 @@ export default function ProductDetail() {
                 Buy Now
               </Link>
             </div>
+
+            <a
+              href={whatsappOrderLink(product, `${SITE_URL}/product/${product.id}`)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-[#25D366] bg-[#25D366]/10 px-4 py-3 text-sm font-semibold text-[#128C4A] transition-colors hover:bg-[#25D366] hover:text-white">
+
+              <MessageCircleIcon className="h-4 w-4" />
+              Order on WhatsApp
+            </a>
 
             <div className="mt-6 grid grid-cols-1 gap-3 rounded-2xl border border-gray-100 p-4 sm:grid-cols-3">
               <div className="flex items-center gap-2.5">

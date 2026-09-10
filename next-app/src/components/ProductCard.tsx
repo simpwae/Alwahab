@@ -7,6 +7,7 @@ import { Product } from '../types';
 import { useCart } from '../context/CartContext';
 import { StatusBadge } from './ui/StatusBadge';
 import { cloudinaryUrl } from '../lib/cloudinary';
+import { formatSoldCount } from '../utils/productFilters';
 interface ProductCardProps {
   product: Product;
   wishlisted?: boolean;
@@ -22,6 +23,7 @@ export function ProductCard({
   onToggleWishlist,
   onQuickView
 }: ProductCardProps) {
+  const soldLabel = formatSoldCount(product.unitsSold);
   const [hovered, setHovered] = useState(false);
   const { addToCart } = useCart();
   const isOutOfStock = product.status === 'OutOfStock' || product.stockQty === 0;
@@ -130,8 +132,8 @@ export function ProductCard({
           <span className="font-medium text-accent-dark">
               Only {product.stockQty} left
             </span> :
-          product.unitsSold > 0 ?
-          <span className="text-ink-muted">{product.unitsSold} sold</span> :
+          soldLabel ?
+          <span className="text-ink-muted">{soldLabel}</span> :
           null}
         </div>
 

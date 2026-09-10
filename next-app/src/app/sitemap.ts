@@ -14,7 +14,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  const categories = ['electronics', 'accessories', 'home-kitchen', 'gadgets', 'lifestyle'];
+  const categories = ['electronics', 'home-kitchen', 'baby-gear'];
   const categoryEntries: MetadataRoute.Sitemap = categories.map((slug) => ({
     url: `${baseUrl}/category/${slug}`,
     lastModified: new Date(),

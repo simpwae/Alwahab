@@ -18,7 +18,6 @@ filters: ListingFilters)
     return false;
     if (filters.inStockOnly && (p.stockQty === 0 || p.status === 'OutOfStock'))
     return false;
-    if (p.sellingPrice > filters.maxPrice) return false;
     return true;
   });
 }
@@ -49,10 +48,8 @@ export function applySort(products: Product[], sort: SortOption): Product[] {
 export function slugToCategory(slug: string): string | null {
   const map: Record<string, string> = {
     electronics: 'Electronics',
-    accessories: 'Accessories',
     'home-kitchen': 'Home & Kitchen',
-    gadgets: 'Gadgets',
-    lifestyle: 'Lifestyle'
+    'baby-gear': 'Baby Gear'
   };
   return map[slug] ?? null;
 }
@@ -62,4 +59,12 @@ export function categoryToSlug(category: string): string {
   toLowerCase().
   replace(/\s*&\s*/g, '-').
   replace(/\s+/g, '-');
+}
+
+// units_sold is maintained by the place_order RPC (incremented atomically
+// alongside the stock decrement), so it is already the real order-derived
+// count - this only shapes how it reads on a card.
+export function formatSoldCount(unitsSold: number): string | null {
+  if (unitsSold <= 0) return null;
+  return unitsSold >= 10 ? `${unitsSold}+ Sold` : `${unitsSold} Sold`;
 }

@@ -26,16 +26,12 @@ const CATEGORY_LINKS = [
   href: '/category/electronics'
 },
 {
-  label: 'Accessories',
-  href: '/category/accessories'
-},
-{
   label: 'Home & Kitchen',
   href: '/category/home-kitchen'
 },
 {
-  label: 'Gadgets',
-  href: '/category/gadgets'
+  label: 'Baby Gear',
+  href: '/category/baby-gear'
 }];
 
 const MEGA_MENU_GROUPS = [
@@ -48,12 +44,8 @@ const MEGA_MENU_GROUPS = [
   items: ['Cookware', 'Storage', 'Small Appliances', 'Décor']
 },
 {
-  title: 'Accessories',
-  items: ['Wallets & Bags', 'Sunglasses', 'Belts', 'Jewelry']
-},
-{
-  title: 'Lifestyle & Gadgets',
-  items: ['Fitness', 'Travel', 'Home Office', 'Smart Gadgets']
+  title: 'Baby Gear',
+  items: ['Feeding & Nursing', 'Diapering & Bath', 'Strollers & Car Seats', 'Toys & Playtime']
 }];
 
 function useSearchBox() {
@@ -148,7 +140,7 @@ export function Header() {
               setShowSuggestions(true);
             }}
             onFocus={() => setShowSuggestions(true)}
-            placeholder="Search electronics, accessories, home…"
+            placeholder="Search products…"
             className="w-full rounded-xl border border-gray-200 bg-surface py-2.5 pl-10 pr-4 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20" />
 
           <AnimatePresence>
@@ -220,7 +212,7 @@ export function Header() {
             </span>
           </Link>
           <Link
-            href="/account/wishlist"
+            href="/wishlist"
             className="relative flex flex-col items-center rounded-xl px-2.5 py-1.5 text-ink-muted transition-colors hover:bg-surface hover:text-primary"
             aria-label={`Wishlist, ${wishlistCount} items`}>
 
@@ -264,7 +256,7 @@ export function Header() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search electronics, accessories, home…"
+            placeholder="Search products…"
             className="w-full rounded-xl border border-gray-200 bg-surface py-2.5 pl-10 pr-4 text-sm placeholder:text-ink-muted focus:border-primary focus:bg-white focus:outline-none focus:ring-2 focus:ring-primary/20" />
 
         </form>

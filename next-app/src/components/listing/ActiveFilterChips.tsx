@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { XIcon } from 'lucide-react';
-import { ListingFilters, DEFAULT_MAX_PRICE } from './types';
+import { ListingFilters } from './types';
 interface Chip {
   key: string;
   label: string;
@@ -70,19 +70,6 @@ export function ActiveFilterChips({
     onChange({
       ...filters,
       inStockOnly: false
-    })
-  }] :
-
-  []),
-  ...(filters.maxPrice < DEFAULT_MAX_PRICE ?
-  [
-  {
-    key: 'price',
-    label: `Under PKR ${filters.maxPrice.toLocaleString()}`,
-    onRemove: () =>
-    onChange({
-      ...filters,
-      maxPrice: DEFAULT_MAX_PRICE
     })
   }] :
 

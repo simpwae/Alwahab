@@ -3,7 +3,8 @@ import { Header } from '../../components/layout/Header';
 import { Footer } from '../../components/layout/Footer';
 import { CartDrawer } from '../../components/CartDrawer';
 import { Breadcrumb } from '../../components/listing/Breadcrumb';
-import { MailIcon, PhoneIcon, ClockIcon, MapPinIcon } from 'lucide-react';
+import { MailIcon, PhoneIcon, ClockIcon, MapPinIcon, MessageCircleIcon } from 'lucide-react';
+import { STORE_PHONE_DISPLAY, STORE_PHONE_TEL, WHATSAPP_NUMBER } from '../../lib/site';
 
 export const metadata = {
   title: 'Contact Us | Alwahab',
@@ -26,7 +27,18 @@ export default function Contact() {
           Questions about an order, a product, or anything else — we&apos;re happy to help.
         </p>
 
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <a
+            href={`https://wa.me/${WHATSAPP_NUMBER}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex flex-col items-start gap-2 rounded-2xl border border-[#25D366]/30 bg-[#25D366]/5 p-5 transition-colors hover:border-[#25D366] hover:bg-[#25D366]/10"
+          >
+            <MessageCircleIcon className="h-5 w-5 text-[#128C4A]" />
+            <span className="font-display text-sm font-semibold text-ink">WhatsApp</span>
+            <span className="text-sm text-ink-muted">{STORE_PHONE_DISPLAY}</span>
+          </a>
+
           <a
             href="mailto:support@alwahab.pk"
             className="flex flex-col items-start gap-2 rounded-2xl border border-gray-100 p-5 transition-colors hover:border-primary/30 hover:bg-primary/5"
@@ -37,12 +49,12 @@ export default function Contact() {
           </a>
 
           <a
-            href="tel:+923255897659"
+            href={`tel:${STORE_PHONE_TEL}`}
             className="flex flex-col items-start gap-2 rounded-2xl border border-gray-100 p-5 transition-colors hover:border-primary/30 hover:bg-primary/5"
           >
             <PhoneIcon className="h-5 w-5 text-primary" />
             <span className="font-display text-sm font-semibold text-ink">Phone</span>
-            <span className="text-sm text-ink-muted">+92 325 5897659</span>
+            <span className="text-sm text-ink-muted">{STORE_PHONE_DISPLAY}</span>
           </a>
 
           <div className="flex flex-col items-start gap-2 rounded-2xl border border-gray-100 p-5">

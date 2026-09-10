@@ -4,7 +4,6 @@ export interface ListingFilters {
   minRating: number | null;
   minDiscount: number | null;
   inStockOnly: boolean;
-  maxPrice: number;
 }
 
 export type SortOption =
@@ -26,17 +25,12 @@ export const SORT_LABELS: Record<SortOption, string> = {
   'top-rated': 'Top Rated'
 };
 
-export const DEFAULT_MAX_PRICE = 20000;
-
-export function createDefaultFilters(
-maxPrice: number = DEFAULT_MAX_PRICE)
-: ListingFilters {
+export function createDefaultFilters(): ListingFilters {
   return {
     categories: [],
     brands: [],
     minRating: null,
     minDiscount: null,
-    inStockOnly: false,
-    maxPrice
+    inStockOnly: false
   };
 }

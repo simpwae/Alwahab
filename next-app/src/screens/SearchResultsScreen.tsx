@@ -33,10 +33,8 @@ import {
 const PAGE_SIZE = 8;
 const POPULAR_CATEGORIES = [
 'Electronics',
-'Accessories',
 'Home & Kitchen',
-'Gadgets',
-'Lifestyle'];
+'Baby Gear'];
 
 export function SearchResultsScreen() {
   const { products } = useProducts();

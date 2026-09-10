@@ -4,7 +4,7 @@ import React, { ReactNode, useMemo } from 'react';
 import { XIcon, StarIcon } from 'lucide-react';
 import { Product } from '../../types';
 import { Button } from '../ui/Button';
-import { ListingFilters, DEFAULT_MAX_PRICE } from './types';
+import { ListingFilters } from './types';
 interface FacetCount {
   value: string;
   count: number;
@@ -78,8 +78,7 @@ export function FilterSidebar({
   filters.brands.length > 0 ||
   filters.minRating !== null ||
   filters.minDiscount !== null ||
-  filters.inStockOnly ||
-  filters.maxPrice < DEFAULT_MAX_PRICE;
+  filters.inStockOnly;
   return (
     <div
       className={`rounded-2xl border border-gray-100 bg-white p-5 ${className}`}>
@@ -96,32 +95,6 @@ export function FilterSidebar({
           </button>
         }
       </div>
-
-      <FilterSection title="Price">
-        <div className="px-1">
-          <input
-            type="range"
-            min={0}
-            max={DEFAULT_MAX_PRICE}
-            step={500}
-            value={filters.maxPrice}
-            onChange={(e) =>
-            onChange({
-              ...filters,
-              maxPrice: Number(e.target.value)
-            })
-            }
-            aria-label="Maximum price"
-            className="w-full accent-primary" />
-
-          <div className="mt-1 flex items-center justify-between text-xs text-ink-muted">
-            <span>PKR 0</span>
-            <span className="font-medium text-ink">
-              Up to PKR {filters.maxPrice.toLocaleString()}
-            </span>
-          </div>
-        </div>
-      </FilterSection>
 
       <FilterSection title="Category">
         <ul className="space-y-2.5">

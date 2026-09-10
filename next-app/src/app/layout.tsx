@@ -10,8 +10,8 @@ export const metadata: Metadata = {
     default: "Alwahab | Your Ultimate Store",
     template: "%s | Alwahab",
   },
-  description: "Alwahab — Shop electronics, accessories, home & kitchen, gadgets, and lifestyle products with great deals in Pakistan.",
-  keywords: ["ecommerce", "pakistan", "electronics", "gadgets", "home accessories", "alwahab"],
+  description: "Alwahab — Shop electronics, home & kitchen, and baby gear with great deals in Pakistan.",
+  keywords: ["ecommerce", "pakistan", "electronics", "home kitchen", "baby gear", "alwahab"],
   authors: [{ name: "Alwahab Store" }],
   creator: "Alwahab",
   alternates: {
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Alwahab Store",
     title: "Alwahab | Your Ultimate Store",
-    description: "Shop the best deals on electronics, accessories, and home goods at Alwahab.",
+    description: "Shop the best deals on electronics, home & kitchen, and baby gear at Alwahab.",
     images: [
       {
         url: "/og-image.png", // Assuming we will have an og-image
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Alwahab | Your Ultimate Store",
-    description: "Shop the best deals on electronics, accessories, and home goods at Alwahab.",
+    description: "Shop the best deals on electronics, home & kitchen, and baby gear at Alwahab.",
     images: ["/og-image.png"],
   },
   robots: {

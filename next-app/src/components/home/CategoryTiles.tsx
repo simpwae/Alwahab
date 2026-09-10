@@ -5,10 +5,8 @@ import Link from 'next/link';
 import { cloudinaryUrl } from '../../lib/cloudinary';
 import {
   CpuIcon,
-  WatchIcon,
   UtensilsCrossedIcon,
-  ZapIcon,
-  SparklesIcon,
+  BabyIcon,
   FlameIcon } from
 'lucide-react';
 interface CategoryTile {
@@ -26,13 +24,6 @@ const TILES: CategoryTile[] = [
   'https://res.cloudinary.com/taptt8ob/image/upload/v1786462687/wabwhcc2kl6q16rnufkd.jpg'
 },
 {
-  label: 'Accessories',
-  href: '/category/accessories',
-  icon: <WatchIcon className="h-5 w-5" />,
-  image:
-  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462688/uxap2jl6ozxecpbu8dtd.jpg'
-},
-{
   label: 'Home & Kitchen',
   href: '/category/home-kitchen',
   icon: <UtensilsCrossedIcon className="h-5 w-5" />,
@@ -40,16 +31,9 @@ const TILES: CategoryTile[] = [
   'https://res.cloudinary.com/taptt8ob/image/upload/v1786462709/gxctjlpnuyhfpzq0mc16.jpg'
 },
 {
-  label: 'Gadgets',
-  href: '/category/gadgets',
-  icon: <ZapIcon className="h-5 w-5" />,
-  image:
-  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462686/iotvmzgy9y9pjjlt6kpj.jpg'
-},
-{
-  label: 'Lifestyle',
-  href: '/category/lifestyle',
-  icon: <SparklesIcon className="h-5 w-5" />,
+  label: 'Baby Gear',
+  href: '/category/baby-gear',
+  icon: <BabyIcon className="h-5 w-5" />,
   image:
   'https://res.cloudinary.com/taptt8ob/image/upload/v1786462689/b5wjchrmyuscdzf5qb7b.jpg'
 },
@@ -64,7 +48,7 @@ const TILES: CategoryTile[] = [
 export function CategoryTiles() {
   return (
     <section aria-label="Shop by category">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         {TILES.map((tile) =>
         <Link
           key={tile.label}

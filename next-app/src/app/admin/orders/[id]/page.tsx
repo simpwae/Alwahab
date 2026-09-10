@@ -2,18 +2,17 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { PackageSearchIcon } from 'lucide-react';
+import { PackageSearchIcon, PrinterIcon, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { AdminProtectedRoute } from '../../../../components/admin/AdminProtectedRoute';
 import { AdminLayout } from '../../../../components/admin/AdminLayout';
-import { StatusBadge, PAYMENT_STATUS_VARIANT } from '../../../../components/ui/StatusBadge';
+import { StatusBadge, PAYMENT_STATUS_VARIANT, FULFILLMENT_STATUS_VARIANT } from '../../../../components/ui/StatusBadge';
 import { EmptyState } from '../../../../components/states/EmptyState';
 import { FormField } from '../../../../components/ui/FormField';
 import { Button } from '../../../../components/ui/Button';
 import { useAdminOrders } from '../../../../context/OrderContext';
 import { FulfillmentStatus, PaymentStatus } from '../../../../types';
 import { cloudinaryUrl } from '../../../../lib/cloudinary';
-import { ImageIcon } from 'lucide-react';
 
 const PKR = new Intl.NumberFormat('en-PK', { maximumFractionDigits: 0 });
 const FULFILLMENT_OPTIONS: FulfillmentStatus[] = [
@@ -87,10 +86,31 @@ function AdminOrderDetail() {
     }
   };
 
+  // The @media print rules in globals.css key off this attribute to hide the
+  // admin sidebar and the "Update Status" panel. Set only for the duration of
+  // the print job so nothing on screen changes.
+  const handlePrint = () => {
+    document.documentElement.setAttribute('data-print', 'order');
+    const cleanup = () => document.documentElement.removeAttribute('data-print');
+    window.addEventListener('afterprint', cleanup, { once: true });
+    window.print();
+    // Safari and some mobile browsers never fire afterprint.
+    setTimeout(cleanup, 1000);
+  };
+
   return (
     <AdminLayout title={`Order #${order.id}`}>
+      <div className="mb-4 flex justify-end" data-print-hide>
+        <Button
+          variant="secondary"
+          icon={<PrinterIcon className="h-4 w-4" />}
+          onClick={handlePrint}>
+
+          Print / Save as PDF
+        </Button>
+      </div>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
-        <div className="rounded-2xl border border-gray-100 bg-white">
+        <div className="rounded-2xl border border-gray-100 bg-white" data-print-block>
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 p-5">
             <div>
               <p className="text-xs text-ink-muted">Customer</p>
@@ -106,10 +126,39 @@ function AdminOrderDetail() {
                 </p>
               }
             </div>
-            <StatusBadge
-              label={order.paymentStatus}
-              variant={PAYMENT_STATUS_VARIANT[order.paymentStatus]} />
+            <div className="flex flex-col items-end gap-1.5">
+              <StatusBadge
+                label={order.paymentStatus}
+                variant={PAYMENT_STATUS_VARIANT[order.paymentStatus]} />
 
+              <StatusBadge
+                label={order.fulfillmentStatus}
+                variant={FULFILLMENT_STATUS_VARIANT[order.fulfillmentStatus]} />
+
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 border-b border-gray-100 p-5 text-sm sm:grid-cols-4">
+            <div>
+              <p className="text-xs text-ink-muted">Order Date</p>
+              <p className="mt-0.5 font-medium text-ink">{order.date}</p>
+            </div>
+            <div>
+              <p className="text-xs text-ink-muted">Payment Method</p>
+              <p className="mt-0.5 font-medium text-ink">{order.paymentMethod}</p>
+            </div>
+            {order.trackingNumber &&
+            <div>
+                <p className="text-xs text-ink-muted">Tracking Number</p>
+                <p className="mt-0.5 font-medium text-ink">{order.trackingNumber}</p>
+              </div>
+            }
+            {order.couponCode &&
+            <div>
+                <p className="text-xs text-ink-muted">Coupon</p>
+                <p className="mt-0.5 font-medium text-ink">{order.couponCode}</p>
+              </div>
+            }
           </div>
           {order.paymentMethod === 'BankTransfer' && order.receiptImage &&
           <div className="flex flex-wrap items-center gap-4 border-b border-gray-100 p-5">
@@ -151,15 +200,33 @@ function AdminOrderDetail() {
               </li>
             )}
           </ul>
-          <div className="flex justify-between border-t border-gray-100 p-5 text-base">
-            <span className="font-semibold text-ink">Total</span>
-            <span className="font-display font-bold text-ink">
-              PKR {PKR.format(order.total)}
-            </span>
+          <div className="space-y-1.5 border-t border-gray-100 p-5 text-sm">
+            <div className="flex justify-between">
+              <span className="text-ink-muted">Subtotal</span>
+              <span className="font-medium text-ink">PKR {PKR.format(order.subtotal)}</span>
+            </div>
+            {order.discount > 0 &&
+            <div className="flex justify-between">
+                <span className="text-ink-muted">Discount</span>
+                <span className="font-medium text-accent-dark">
+                  −PKR {PKR.format(order.discount)}
+                </span>
+              </div>
+            }
+            <div className="flex justify-between">
+              <span className="text-ink-muted">Shipping</span>
+              <span className="font-medium text-ink">PKR {PKR.format(order.shipping)}</span>
+            </div>
+            <div className="flex justify-between border-t border-gray-100 pt-2 text-base">
+              <span className="font-semibold text-ink">Total</span>
+              <span className="font-display font-bold text-ink">
+                PKR {PKR.format(order.total)}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="h-fit space-y-4 rounded-2xl border border-gray-100 bg-white p-5">
+        <div className="h-fit space-y-4 rounded-2xl border border-gray-100 bg-white p-5" data-print-hide>
           <h2 className="font-display text-sm font-bold text-ink">
             Update Status
           </h2>

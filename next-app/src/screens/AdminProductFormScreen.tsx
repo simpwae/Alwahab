@@ -23,6 +23,7 @@ interface FormValues {
   images: string[];
   sizes: ProductSize[];
   description: string;
+  specs: string[];
   sku: string;
   originalPrice: string;
   sellingPrice: string;
@@ -40,6 +41,7 @@ function productToForm(p: Product): FormValues {
     images: p.images,
     sizes: p.sizes,
     description: p.description,
+    specs: p.specs,
     sku: p.sku,
     originalPrice: String(p.originalPrice),
     sellingPrice: String(p.sellingPrice),
@@ -57,6 +59,7 @@ const EMPTY_FORM: FormValues = {
   images: [],
   sizes: [],
   description: '',
+  specs: [],
   sku: '',
   originalPrice: '',
   sellingPrice: '',
@@ -82,6 +85,7 @@ function AdminProductForm() {
   const [uploading, setUploading] = useState(false);
   const [sizeLabel, setSizeLabel] = useState('');
   const [sizePrice, setSizePrice] = useState('');
+  const [featureText, setFeatureText] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // products arrives from an async context fetch, which may still be in
@@ -140,6 +144,20 @@ function AdminProductForm() {
     setValues((prev) => ({ ...prev, sizes: prev.sizes.filter((s) => s.label !== label) }));
   };
 
+  const addFeature = () => {
+    const feature = featureText.trim();
+    if (!feature || values.specs.includes(feature)) {
+      setFeatureText('');
+      return;
+    }
+    setValues((prev) => ({ ...prev, specs: [...prev.specs, feature] }));
+    setFeatureText('');
+  };
+
+  const removeFeature = (feature: string) => {
+    setValues((prev) => ({ ...prev, specs: prev.specs.filter((s) => s !== feature) }));
+  };
+
   const validate = (): boolean => {
     const next: Partial<Record<keyof FormValues, string>> = {};
     if (!values.name.trim()) next.name = 'Name is required.';
@@ -174,6 +192,7 @@ function AdminProductForm() {
         images: values.images,
         sizes: values.sizes,
         description: values.description,
+        specs: values.specs,
         sku: values.sku,
         originalPrice,
         sellingPrice,
@@ -192,7 +211,7 @@ function AdminProductForm() {
         images: values.images,
         sizes: values.sizes,
         description: values.description,
-        specs: [],
+        specs: values.specs,
         originalPrice,
         sellingPrice,
         discountPct,
@@ -356,6 +375,49 @@ function AdminProductForm() {
           </div>
           <p className="mt-1.5 text-xs text-ink-muted">
             Leave empty if this product doesn&apos;t come in sizes. Each size can have its own price (e.g. a larger size costing more) — leave price blank to use the Selling Price above.
+          </p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-ink">Key Features</label>
+          <div className="flex flex-wrap items-center gap-2">
+            {values.specs.map((spec) =>
+            <span
+              key={spec}
+              className="flex items-center gap-1.5 rounded-full bg-surface px-3 py-1 text-sm font-medium text-ink">
+
+                {spec}
+                <button
+                type="button"
+                aria-label={`Remove feature ${spec}`}
+                onClick={() => removeFeature(spec)}
+                className="text-ink-muted hover:text-red-600">
+
+                  <XIcon className="h-3.5 w-3.5" />
+                </button>
+              </span>
+            )}
+          </div>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <input
+              type="text"
+              value={featureText}
+              onChange={(e) => setFeatureText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  addFeature();
+                }
+              }}
+              placeholder="e.g. 2-year warranty"
+              className="w-64 rounded-xl border border-gray-300 bg-white px-3.5 py-1.5 text-sm text-ink placeholder:text-ink-muted focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" />
+
+            <Button type="button" size="sm" variant="secondary" onClick={addFeature}>
+              Add Feature
+            </Button>
+          </div>
+          <p className="mt-1.5 text-xs text-ink-muted">
+            Shown as bullet points above the description on the product page. Write &quot;Capacity: 500ml&quot; to also fill in the Specifications table.
           </p>
         </div>
 

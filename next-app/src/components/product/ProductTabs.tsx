@@ -15,6 +15,7 @@ interface ProductTabsProps {
 const TABS: {
   id: TabId;
   label: string;
+  show?: (product: Product) => boolean;
 }[] = [
 {
   id: 'description',
@@ -22,7 +23,10 @@ const TABS: {
 },
 {
   id: 'specifications',
-  label: 'Specifications'
+  label: 'Specifications',
+  // Without key features this tab is three static rows (SKU, brand,
+  // category) already visible elsewhere on the page.
+  show: (product) => product.specs.length > 0
 },
 {
   id: 'reviews',
@@ -32,6 +36,7 @@ const TABS: {
 export function ProductTabs({ product, reviews, canReview }: ProductTabsProps) {
   const [activeTab, setActiveTab] = useState<TabId>('description');
   const approvedReviews = reviews.filter((r) => r.status === 'Approved');
+  const visibleTabs = TABS.filter((tab) => !tab.show || tab.show(product));
   return (
     <div className="rounded-2xl border border-gray-100 bg-white">
       <div
@@ -39,7 +44,7 @@ export function ProductTabs({ product, reviews, canReview }: ProductTabsProps) {
         aria-label="Product information"
         className="flex border-b border-gray-100">
 
-        {TABS.map((tab) =>
+        {visibleTabs.map((tab) =>
         <button
           key={tab.id}
           type="button"
@@ -59,25 +64,32 @@ export function ProductTabs({ product, reviews, canReview }: ProductTabsProps) {
 
       <div className="p-5 sm:p-6">
         {activeTab === 'description' &&
-        <div className="space-y-4">
-            <p className="text-sm leading-relaxed text-ink-muted">
-              {product.description}
-            </p>
-            <div>
-              <h3 className="mb-2 text-sm font-semibold text-ink">
-                Key Features
-              </h3>
-              <ul className="space-y-2">
-                {product.specs.map((spec) =>
+        <div className="space-y-5">
+            {product.specs.length > 0 &&
+          <div>
+                <h3 className="mb-2 text-sm font-semibold text-ink">
+                  Key Features
+                </h3>
+                <ul className="space-y-2">
+                  {product.specs.map((spec) =>
               <li
                 key={spec}
                 className="flex items-start gap-2 text-sm text-ink-muted">
 
-                    <BadgeCheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-                    {spec}
-                  </li>
+                      <BadgeCheckIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                      {spec}
+                    </li>
               )}
-              </ul>
+                </ul>
+              </div>
+          }
+            <div>
+              <h3 className="mb-2 text-sm font-semibold text-ink">
+                Description
+              </h3>
+              <p className="text-sm leading-relaxed text-ink-muted">
+                {product.description}
+              </p>
             </div>
           </div>
         }
