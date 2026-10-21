@@ -49,6 +49,17 @@ const SLIDES: Slide[] = [
   image:
   'https://res.cloudinary.com/taptt8ob/image/upload/v1786462686/iotvmzgy9y9pjjlt6kpj.jpg',
   bg: '#1A1A1A'
+},
+{
+  id: 's4',
+  eyebrow: 'New Arrival',
+  title: 'Discover Beauty Essentials',
+  subtitle: 'Skincare, makeup, haircare and fragrances from top brands.',
+  ctaLabel: 'Shop Cosmetics',
+  ctaHref: '/category/cosmetics',
+  image:
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462709/gxctjlpnuyhfpzq0mc16.jpg',
+  bg: '#2D1B33'
 }];
 
 export function HeroCarousel() {
@@ -78,7 +89,7 @@ export function HeroCarousel() {
       aria-label="Promotions"
       className="relative overflow-hidden rounded-2xl sm:rounded-3xl">
 
-      <div className="relative h-[280px] sm:h-[340px] lg:h-[420px]">
+      <div className="relative h-[320px] sm:h-[400px] lg:h-[500px]">
         <AnimatePresence initial={false} custom={direction} mode="wait">
           <motion.div
             key={slide.id}
@@ -108,13 +119,17 @@ export function HeroCarousel() {
               src={cloudinaryUrl(slide.image, { width: 1600 })}
               alt=""
               aria-hidden="true"
-              className="absolute inset-0 h-full w-full object-cover opacity-30 mix-blend-luminosity" />
+              loading="eager"
+              fetchPriority="high"
+              className="absolute inset-0 h-full w-full object-cover" />
+
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
 
             <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col px-6 text-white sm:px-10 lg:px-16">
               <span className="mb-3 inline-flex w-max items-center rounded-full bg-white/15 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
                 {slide.eyebrow}
               </span>
-              <h2 className="max-w-lg font-display text-2xl font-extrabold leading-tight sm:text-3xl lg:text-4xl">
+              <h2 className="max-w-lg font-display text-2xl font-extrabold leading-tight drop-shadow-lg sm:text-3xl lg:text-4xl">
                 {slide.title}
               </h2>
               <p className="mt-2 max-w-md text-sm text-white/85 sm:text-base">

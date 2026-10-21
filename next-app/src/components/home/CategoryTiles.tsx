@@ -7,7 +7,8 @@ import {
   CpuIcon,
   UtensilsCrossedIcon,
   BabyIcon,
-  FlameIcon } from
+  FlameIcon,
+  SparklesIcon } from
 'lucide-react';
 interface CategoryTile {
   label: string;
@@ -38,6 +39,13 @@ const TILES: CategoryTile[] = [
   'https://res.cloudinary.com/taptt8ob/image/upload/v1786462689/b5wjchrmyuscdzf5qb7b.jpg'
 },
 {
+  label: 'Cosmetics',
+  href: '/category/cosmetics',
+  icon: <SparklesIcon className="h-5 w-5" />,
+  image:
+  'https://res.cloudinary.com/taptt8ob/image/upload/v1786462689/b5wjchrmyuscdzf5qb7b.jpg'
+},
+{
   label: 'Deals',
   href: '/deals',
   icon: <FlameIcon className="h-5 w-5" />,
@@ -48,7 +56,7 @@ const TILES: CategoryTile[] = [
 export function CategoryTiles() {
   return (
     <section aria-label="Shop by category">
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         {TILES.map((tile) =>
         <Link
           key={tile.label}

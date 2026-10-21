@@ -34,7 +34,8 @@ const PAGE_SIZE = 8;
 const POPULAR_CATEGORIES = [
 'Electronics',
 'Home & Kitchen',
-'Baby Gear'];
+'Baby Gear',
+'Cosmetics'];
 
 export function SearchResultsScreen() {
   const { products } = useProducts();

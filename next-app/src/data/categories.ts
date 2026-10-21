@@ -1,4 +1,5 @@
 export const CATEGORIES = [
 'Electronics',
 'Home & Kitchen',
-'Baby Gear'];
+'Baby Gear',
+'Cosmetics'];

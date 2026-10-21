@@ -32,6 +32,10 @@ const CATEGORY_LINKS = [
 {
   label: 'Baby Gear',
   href: '/category/baby-gear'
+},
+{
+  label: 'Cosmetics',
+  href: '/category/cosmetics'
 }];
 
 const MEGA_MENU_GROUPS = [
@@ -46,6 +50,10 @@ const MEGA_MENU_GROUPS = [
 {
   title: 'Baby Gear',
   items: ['Feeding & Nursing', 'Diapering & Bath', 'Strollers & Car Seats', 'Toys & Playtime']
+},
+{
+  title: 'Cosmetics',
+  items: ['Skincare', 'Makeup', 'Haircare', 'Fragrances']
 }];
 
 function useSearchBox() {

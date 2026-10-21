@@ -87,7 +87,7 @@ export function ProductTabs({ product, reviews, canReview }: ProductTabsProps) {
               <h3 className="mb-2 text-sm font-semibold text-ink">
                 Description
               </h3>
-              <p className="text-sm leading-relaxed text-ink-muted">
+              <p className="font-prose text-[15px] leading-relaxed text-ink-muted">
                 {product.description}
               </p>
             </div>
@@ -198,7 +198,7 @@ export function ProductTabs({ product, reviews, canReview }: ProductTabsProps) {
                         {review.title}
                       </h4>
               }
-                    <p className="mt-1 text-sm text-ink-muted">
+                    <p className="mt-1 font-prose text-sm text-ink-muted">
                       {review.comment}
                     </p>
                   </li>

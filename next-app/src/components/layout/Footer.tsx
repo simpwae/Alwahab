@@ -64,6 +64,10 @@ const CATEGORIES = [
   slug: 'baby-gear'
 },
 {
+  label: 'Cosmetics',
+  slug: 'cosmetics'
+},
+{
   label: 'Deals',
   slug: 'deals'
 }];
@@ -76,7 +80,7 @@ export function Footer() {
           <Logo />
           <p className="mt-3 max-w-xs text-sm text-ink-muted">
             Alwahab is your trusted destination for electronics, home &amp;
-            kitchen, and baby gear — quality you can count on.
+            kitchen, baby gear, and cosmetics — quality you can count on.
           </p>
           <div className="mt-4 space-y-2">
             <p className="flex items-start gap-2 text-sm text-ink-muted">

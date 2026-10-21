@@ -49,7 +49,8 @@ export function slugToCategory(slug: string): string | null {
   const map: Record<string, string> = {
     electronics: 'Electronics',
     'home-kitchen': 'Home & Kitchen',
-    'baby-gear': 'Baby Gear'
+    'baby-gear': 'Baby Gear',
+    cosmetics: 'Cosmetics'
   };
   return map[slug] ?? null;
 }

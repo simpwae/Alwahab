@@ -59,6 +59,13 @@ const CATEGORY_SEO: Record<
     'Our Baby Gear collection is updated regularly with new arrivals. Enjoy fast nationwide delivery and cash on delivery on eligible orders.']
 
   },
+  cosmetics: {
+    title: 'Shop Cosmetics Online at Alwahab',
+    paragraphs: [
+    'Discover premium skincare, makeup, haircare, and fragrances at Alwahab. We stock only genuine products from trusted beauty brands, backed by our 7-day return policy.',
+    'Our cosmetics collection is refreshed regularly with trending products and seasonal picks. Enjoy fast nationwide delivery and cash on delivery on eligible orders.']
+
+  },
   deals: {
     title: 'Best Deals & Discounts at Alwahab',
     paragraphs: [
@@ -69,7 +76,7 @@ const CATEGORY_SEO: Record<
   default: {
     title: 'Shop at Alwahab',
     paragraphs: [
-    'Alwahab brings you a curated multi-category shopping experience spanning electronics, home & kitchen, and baby gear — all in one trusted store.',
+    'Alwahab brings you a curated multi-category shopping experience spanning electronics, home & kitchen, baby gear, and cosmetics — all in one trusted store.',
     'Every product is quality-checked before listing, and we offer nationwide delivery with cash on delivery, secure bank transfer, and card payment options.']
 
   }

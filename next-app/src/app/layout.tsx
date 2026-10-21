@@ -1,8 +1,30 @@
 import type { Metadata } from "next";
+import { Inter, Poppins, Source_Serif_4 } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 import { Providers } from "./providers";
 import { SITE_URL } from "../lib/site";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800"],
+});
+
+const poppins = Poppins({
+  subsets: ["latin"],
+  variable: "--font-poppins",
+  display: "swap",
+  weight: ["600", "700", "800"],
+});
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  display: "swap",
+  weight: ["400", "500"],
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -10,8 +32,8 @@ export const metadata: Metadata = {
     default: "Alwahab | Your Ultimate Store",
     template: "%s | Alwahab",
   },
-  description: "Alwahab — Shop electronics, home & kitchen, and baby gear with great deals in Pakistan.",
-  keywords: ["ecommerce", "pakistan", "electronics", "home kitchen", "baby gear", "alwahab"],
+  description: "Alwahab — Shop electronics, home & kitchen, baby gear, and cosmetics with great deals in Pakistan.",
+  keywords: ["ecommerce", "pakistan", "electronics", "home kitchen", "baby gear", "cosmetics", "skincare", "makeup", "alwahab"],
   authors: [{ name: "Alwahab Store" }],
   creator: "Alwahab",
   alternates: {
@@ -23,7 +45,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     siteName: "Alwahab Store",
     title: "Alwahab | Your Ultimate Store",
-    description: "Shop the best deals on electronics, home & kitchen, and baby gear at Alwahab.",
+    description: "Shop the best deals on electronics, home & kitchen, baby gear, and cosmetics at Alwahab.",
     images: [
       {
         url: "/og-image.png", // Assuming we will have an og-image
@@ -36,7 +58,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Alwahab | Your Ultimate Store",
-    description: "Shop the best deals on electronics, home & kitchen, and baby gear at Alwahab.",
+    description: "Shop the best deals on electronics, home & kitchen, baby gear, and cosmetics at Alwahab.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -81,7 +103,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className={`h-full antialiased ${inter.variable} ${poppins.variable} ${sourceSerif.variable}`}>
       <body className="min-h-full flex flex-col font-sans">
         <script
           type="application/ld+json"
