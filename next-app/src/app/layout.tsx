@@ -29,11 +29,17 @@ const sourceSerif = Source_Serif_4({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Alwahab | Your Ultimate Store",
+    default: "Alwahab — Online Store Pakistan | Electronics, Home & Cosmetics",
     template: "%s | Alwahab",
   },
-  description: "Alwahab — Shop electronics, home & kitchen, baby gear, and cosmetics with great deals in Pakistan.",
-  keywords: ["ecommerce", "pakistan", "electronics", "home kitchen", "baby gear", "cosmetics", "skincare", "makeup", "alwahab"],
+  description: "Alwahab is Pakistan's trusted online store. Shop electronics, home & kitchen, baby gear, and cosmetics at Alwahab — the best deals, fast delivery, and quality you can count on.",
+  keywords: [
+    "alwahab", "al wahab", "alwahab mart", "alwahab store", "alwahab shop", "alwahab online",
+    "alwahab pakistan", "alwahab electronics", "alwahab cosmetics", "alwahab home kitchen",
+    "alwahab baby gear", "alwahabmart", "alwahab deals",
+    "online store pakistan", "ecommerce pakistan", "electronics pakistan",
+    "home kitchen pakistan", "baby gear pakistan", "cosmetics pakistan", "skincare pakistan", "makeup pakistan",
+  ],
   authors: [{ name: "Alwahab Store" }],
   creator: "Alwahab",
   alternates: {
@@ -43,22 +49,22 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_PK",
     url: SITE_URL,
-    siteName: "Alwahab Store",
-    title: "Alwahab | Your Ultimate Store",
-    description: "Shop the best deals on electronics, home & kitchen, baby gear, and cosmetics at Alwahab.",
+    siteName: "Alwahab",
+    title: "Alwahab — Online Store Pakistan | Electronics, Home & Cosmetics",
+    description: "Alwahab is Pakistan's trusted online store. Shop electronics, home & kitchen, baby gear, and cosmetics at Alwahab with great deals and fast delivery.",
     images: [
       {
-        url: "/og-image.png", // Assuming we will have an og-image
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Alwahab Store Banner",
+        alt: "Alwahab — Online Store Pakistan",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Alwahab | Your Ultimate Store",
-    description: "Shop the best deals on electronics, home & kitchen, baby gear, and cosmetics at Alwahab.",
+    title: "Alwahab — Online Store Pakistan | Electronics, Home & Cosmetics",
+    description: "Alwahab is Pakistan's trusted online store. Shop electronics, home & kitchen, baby gear, and cosmetics at Alwahab with great deals and fast delivery.",
     images: ["/og-image.png"],
   },
   robots: {
@@ -81,8 +87,14 @@ const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Alwahab",
+  alternateName: ["Al Wahab", "Alwahab Mart", "Alwahab Store", "AlWahab", "alwahabmart"],
+  description: "Alwahab is Pakistan's trusted online store for electronics, home & kitchen, baby gear, and cosmetics.",
   url: SITE_URL,
   logo: `${SITE_URL}/og-image.png`,
+  sameAs: [
+    "https://alwahabmart.com",
+    "https://alwahab.vercel.app",
+  ],
 };
 
 const websiteJsonLd = {
