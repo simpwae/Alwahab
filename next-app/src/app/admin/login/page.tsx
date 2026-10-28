@@ -33,7 +33,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-full w-full items-center justify-center bg-ink px-4 py-10">
+    <div className="flex min-h-screen w-full items-center justify-center bg-ink px-4 py-10">
       <div className="w-full max-w-md">
         <div className="mb-6 flex items-center justify-center gap-1.5">
           <Image
