@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function Logo({ className = '' }: { className?: string }) {
   return (
@@ -10,9 +11,11 @@ export function Logo({ className = '' }: { className?: string }) {
       className={`inline-flex shrink-0 items-center ${className}`}
       aria-label="Alwahab home"
     >
-      <img
-        src="/alwahab-logo.svg"
-        alt="Alwahab logo"
+      <Image
+        src="/alwahab-logo.png"
+        alt="Al Wahab Mart"
+        width={496}
+        height={126}
         className="block h-10 w-auto max-w-[220px] object-contain sm:h-12"
       />
     </Link>

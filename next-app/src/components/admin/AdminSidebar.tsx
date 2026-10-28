@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   MenuIcon,
@@ -34,9 +35,11 @@ const NAV_ITEMS = [
 
 function BrandMark() {
   return (
-    <img
-      src="/alwahab-logo.svg"
-      alt="Alwahab logo"
+    <Image
+      src="/alwahab-logo-white.png"
+      alt="Al Wahab Mart"
+      width={496}
+      height={126}
       className="block h-7 w-auto max-w-[170px] object-contain lg:h-8"
     />
   );

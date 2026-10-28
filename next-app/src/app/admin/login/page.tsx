@@ -37,10 +37,10 @@ export default function AdminLogin() {
       <div className="w-full max-w-md">
         <div className="mb-6 flex items-center justify-center gap-1.5">
           <Image
-            src="/alwahab-logo.svg"
+            src="/alwahab-logo-white.png"
             alt="Al Wahab Mart"
-            width={960}
-            height={280}
+            width={496}
+            height={126}
             className="block h-12 w-auto max-w-[220px] object-contain"
           />
           <span className="ml-1.5 text-sm font-medium text-white/50">Admin</span>
