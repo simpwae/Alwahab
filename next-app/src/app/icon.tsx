@@ -18,17 +18,14 @@ export default function Icon() {
           borderRadius: 8,
         }}
       >
-        <span
+        <div
           style={{
-            fontSize: 20,
-            fontWeight: 800,
-            color: '#fff',
-            fontFamily: 'sans-serif',
-            lineHeight: 1,
+            width: 16,
+            height: 16,
+            background: '#fff',
+            clipPath: 'polygon(50% 0%, 100% 100%, 73% 100%, 50% 55%, 27% 100%, 0% 100%)',
           }}
-        >
-          A
-        </span>
+        />
         <div
           style={{
             position: 'absolute',
@@ -36,7 +33,7 @@ export default function Icon() {
             bottom: 3,
             width: 6,
             height: 6,
-            borderRadius: 3,
+            borderRadius: 999,
             background: '#F97316',
           }}
         />

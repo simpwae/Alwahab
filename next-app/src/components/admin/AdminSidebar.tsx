@@ -34,11 +34,12 @@ const NAV_ITEMS = [
 
 function BrandMark() {
   return (
-    <span className="inline-flex items-center gap-0.5 font-display text-lg font-extrabold lg:text-xl">
-      Alwahab
-      <span className="mb-3 h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
-    </span>);
-
+    <img
+      src="/alwahab-logo.svg"
+      alt="Alwahab logo"
+      className="block h-7 w-auto max-w-[170px] object-contain lg:h-8"
+    />
+  );
 }
 
 export function AdminSidebar() {

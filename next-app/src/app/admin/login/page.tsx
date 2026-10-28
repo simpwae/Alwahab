@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { LogInIcon, MailIcon, LockIcon } from 'lucide-react';
 import { FormField } from '../../../components/ui/FormField';
@@ -34,9 +35,14 @@ export default function AdminLogin() {
   return (
     <div className="flex min-h-full w-full items-center justify-center bg-ink px-4 py-10">
       <div className="w-full max-w-md">
-        <div className="mb-6 flex items-center justify-center gap-0.5 font-display text-2xl font-extrabold text-white">
-          Alwahab
-          <span className="mb-3 h-2 w-2 rounded-full bg-accent" aria-hidden="true" />
+        <div className="mb-6 flex items-center justify-center gap-1.5">
+          <Image
+            src="/alwahab-logo.svg"
+            alt="Al Wahab Mart"
+            width={960}
+            height={280}
+            className="block h-12 w-auto max-w-[220px] object-contain"
+          />
           <span className="ml-1.5 text-sm font-medium text-white/50">Admin</span>
         </div>
 

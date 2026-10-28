@@ -17,17 +17,14 @@ export default function AppleIcon() {
           background: '#0E7C6B',
         }}
       >
-        <span
+        <div
           style={{
-            fontSize: 113,
-            fontWeight: 800,
-            color: '#fff',
-            fontFamily: 'sans-serif',
-            lineHeight: 1,
+            width: 98,
+            height: 98,
+            background: '#fff',
+            clipPath: 'polygon(50% 0%, 100% 100%, 73% 100%, 50% 55%, 27% 100%, 0% 100%)',
           }}
-        >
-          A
-        </span>
+        />
         <div
           style={{
             position: 'absolute',

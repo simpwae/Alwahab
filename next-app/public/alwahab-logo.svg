@@ -1,0 +1,31 @@
+<svg width="960" height="280" viewBox="0 0 960 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0E7C6B"/>
+      <stop offset="100%" stop-color="#0B6255"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(10 12)">
+    <path d="M58 168L86 62L117 129L149 61L181 129L211 62L239 168H204L181 127L149 183H117L86 127L64 168H58Z" fill="url(#green)"/>
+    <path d="M76 163L92 92L118 126L149 85L182 126L207 92L224 163H192L177 134L149 172H118L92 134L76 163Z" fill="#F5F8F6" fill-opacity="0.18"/>
+
+    <path d="M26 78C26 40 54 16 92 16C127 16 154 34 164 66H142C134 50 118 37 95 37C72 37 54 51 54 77C54 102 69 117 92 117H116C121 117 125 121 125 126V136C125 146 117 154 107 154H92C58 154 26 130 26 78Z" fill="#0E7C6B"/>
+    <path d="M138 16C178 16 206 38 216 77H194C185 52 167 35 138 35C112 35 96 50 96 77C96 104 111 116 138 116H165C169 116 171 120 171 126V136C171 146 164 154 154 154H138C102 154 76 130 76 92C76 54 104 16 138 16Z" fill="#0E7C6B"/>
+
+    <path d="M96 16C78 16 56 27 41 46C28 63 20 86 20 111C20 123 21 134 25 145L51 132C48 122 47 115 47 108C47 90 54 74 66 62C77 52 90 46 104 46H112V16H96Z" fill="#F7A12A"/>
+    <path d="M135 16H155C185 16 209 38 219 69L191 69C184 52 170 39 155 39H145V16H135Z" fill="#F7A12A"/>
+
+    <path d="M81 56H119V101C119 109 113 115 105 115H92C84 115 81 110 81 101V56Z" fill="#F7A12A"/>
+    <path d="M145 56H183V101C183 109 177 115 169 115H156C148 115 145 110 145 101V56Z" fill="#F7A12A"/>
+
+    <path d="M92 16H104L113 37H105L92 16Z" fill="#F5F8F6" fill-opacity="0.24"/>
+    <path d="M155 16H169L180 37H169L155 16Z" fill="#F5F8F6" fill-opacity="0.24"/>
+  </g>
+
+  <g transform="translate(302 54)">
+    <text x="0" y="90" fill="#0E7C6B" font-family="Montserrat, Arial, sans-serif" font-weight="900" font-size="88" letter-spacing="2">AL WAHAB</text>
+    <path d="M8 126H406" stroke="#F7A12A" stroke-width="7" stroke-linecap="round"/>
+    <text x="168" y="165" fill="#0E7C6B" font-family="Montserrat, Arial, sans-serif" font-weight="900" font-size="52" letter-spacing="8">MART</text>
+  </g>
+</svg>

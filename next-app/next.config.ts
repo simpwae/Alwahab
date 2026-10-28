@@ -7,9 +7,12 @@ import path from "path";
 // - Safepay: checkout is a top-level redirect (window.location.href), not
 //   embedded, so it needs no CSP entry here.
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+const SCRIPT_SRC = process.env.NODE_ENV === 'development'
+  ? "'self' 'unsafe-inline' 'unsafe-eval'"
+  : "'self' 'unsafe-inline'";
 const csp = [
   "default-src 'self'",
-  "script-src 'self' 'unsafe-inline'",
+  `script-src ${SCRIPT_SRC}`,
   "style-src 'self' 'unsafe-inline'",
   `img-src 'self' data: https://res.cloudinary.com`,
   "font-src 'self' data:",
